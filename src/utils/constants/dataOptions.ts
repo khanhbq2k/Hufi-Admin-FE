@@ -58,43 +58,20 @@ export const listAgeCategory = [
 interface ListFilterDefault {
   name: string;
   key: string;
+  type: 'text' | 'radio';
+  options?: ItemListOptionFilterStatusFlight[];
   rules?: Rule[];
 }
 export const listFilterDefault: ListFilterDefault[] = [
   {
     name: 'IDS_TEXT_ORDER_CODE',
     key: 'dealId',
-  },
-  {
-    name: 'IDS_TEXT_BOOKING_CODE',
-    key: 'bookingCode',
+    type: 'text',
   },
   {
     name: 'IDS_TEXT_ID_BOOKER',
     key: 'userId',
-  },
-  {
-    name: 'IDS_TEXT_PHONE_NUMBER',
-    key: 'customerPhone',
-    rules: [
-      {
-        max: 12,
-        message: 'Số điện thoại tối đa 12 kí tự',
-      },
-      {
-        pattern: /^[0-9+]*$/,
-        message: 'Số điện thoại không hợp lệ',
-      },
-    ],
-  },
-  {
-    name: 'IDS_TEXT_USER_NAME',
-    key: 'customerName',
-  },
-  {
-    name: 'IDS_TEXT_EMAIL',
-    key: 'customerEmail',
-    rules: [{ type: 'email', message: 'Email không hợp lệ' }],
+    type: 'text',
   },
 ];
 

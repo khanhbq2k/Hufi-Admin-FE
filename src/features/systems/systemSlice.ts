@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { getAirlines, getAllCountries, getAllowAgents, getUserInfo } from '~/apis/system';
+import { getAirlines, getAllCountries, getUserInfo, getAirports } from '~/apis/system';
 import { IS_COLLAPSIBLE, IS_OPTIMIZE, some } from '~/utils/constants/constant';
 
 export interface AllowAgentType {
@@ -12,8 +12,14 @@ export interface AirlinesType {
   code: string;
   id: number;
   name: string;
-  logo: string;
+  logoUrl: string;
 }
+
+export interface AirportType {
+  code: string;
+  name: string;
+}
+
 export interface SystemState {
   locale: string;
   isLoading: boolean;
@@ -21,6 +27,7 @@ export interface SystemState {
   collapsible: boolean;
   allowAgents: AllowAgentType[];
   airlines: AirlinesType[];
+  airports: AirportType[];
   countries: some[];
   isOptimize: boolean;
 }
@@ -33,6 +40,7 @@ const initialState: SystemState = {
   isOptimize: localStorage.getItem(IS_OPTIMIZE) === 'false',
   allowAgents: [],
   airlines: [],
+  airports: [],
   countries: [],
 };
 
@@ -41,18 +49,18 @@ export const fetUserInfoAsync = createAsyncThunk('system/fetUser', async () => {
   return await data.data;
 });
 
-export const fetAllowAgents = createAsyncThunk('system/fetCa', async () => {
+export const fetAirlines = createAsyncThunk('system/fetAirlines', async () => {
   try {
-    const { data } = await getAllowAgents();
-    return await data.data;
+    const { data } = await getAirlines();
+    return await data.data.items;
   } catch (error) {
     console.log(error);
   }
 });
 
-export const fetAirlines = createAsyncThunk('system/fetAirlines', async () => {
+export const fetAirports = createAsyncThunk('system/fetAirports', async () => {
   try {
-    const { data } = await getAirlines();
+    const { data } = await getAirports();
     return await data.data.items;
   } catch (error) {
     console.log(error);
@@ -100,11 +108,11 @@ export const systemSlice = createSlice({
         state.isLoading = false;
       }
     });
-    builder.addCase(fetAllowAgents.fulfilled, (state, action: PayloadAction<AllowAgentType[]>) => {
-      state.allowAgents = action.payload;
-    });
     builder.addCase(fetAirlines.fulfilled, (state, action: PayloadAction<AirlinesType[]>) => {
       state.airlines = action.payload;
+    });
+    builder.addCase(fetAirports.fulfilled, (state, action: PayloadAction<AirportType[]>) => {
+      state.airports = action.payload;
     });
     builder.addCase(fetAllCountries.fulfilled, (state, action: PayloadAction<some[]>) => {
       state.countries = action.payload;

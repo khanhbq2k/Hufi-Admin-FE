@@ -317,7 +317,6 @@ const FlightRefundFilter: React.FunctionComponent<IFlightRefundFilterProps> = ({
                     }))}
                     value={form.getFieldValue('agencyIds')}
                     handleSelected={(idSelecteds: string[]) => {
-                      console.log('idSelecteds', idSelecteds);
                       handleChangeField('agencyIds', idSelecteds);
                     }}
                     title='IDS_TEXT_SUPPLIER'

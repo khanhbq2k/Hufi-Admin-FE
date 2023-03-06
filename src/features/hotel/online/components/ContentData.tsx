@@ -291,10 +291,10 @@ const ContentData = () => {
         }}
       />
       {!isEmpty(bookingsOnline) &&
-        !(pagingOnline.page === 1 && bookingsOnline.length < pagingOnline.pageSize) && (
+        !(pagingOnline.page === 1 && bookingsOnline.length < pagingOnline.size) && (
           <PaginationTable
             page={pagingOnline.page - 1}
-            size={pagingOnline.pageSize}
+            size={pagingOnline.size}
             onChange={onChangePagination}
             totalElements={totalBookingsOnline}
           />

@@ -1,14 +1,12 @@
 import Cookie from 'js-cookie';
-import CryptoJS from 'crypto-js';
-import DeviceDetector from 'ua-parser-js';
-
 import * as constants from '~/utils/constants/constant';
 import { some } from '~/utils/constants/constant';
 import { listAgeCategory } from '../constants/dataOptions';
 import moment from 'moment';
 
 export function isAuthenticate() {
-  return !!Cookie.get(constants.TOKEN);
+  // return !!Cookie.get(constants.TOKEN);
+  return true;
 }
 
 const has = Object.prototype.hasOwnProperty;
@@ -22,56 +20,8 @@ export const isEmpty = (prop: any) => {
   );
 };
 
-export const isRestrict = (pathname: string, roles: Array<string>) => {
-  let result = isEmpty(roles);
-  if (!isEmpty(constants.ROLE_TABLE[pathname]) && !isEmpty(roles)) {
-    roles.forEach((el) => {
-      const x = constants.ROLE_TABLE[pathname].find((it) => it === el);
-      if (!isEmpty(x)) {
-        result = true;
-      }
-    });
-  }
-  return result;
-};
-
-export const getAppHash = () => {
-  let timeStamp = new Date().getTime();
-  timeStamp = timeStamp / 1000 - ((timeStamp / 1000) % 300);
-  let str = `${timeStamp}:${import.meta.env.VITE_PUBLIC_HASH_KEY}`;
-  const hash = CryptoJS.SHA256(str);
-  const hashStr = CryptoJS.enc.Base64.stringify(hash);
-  return hashStr;
-};
-
-export const getPlatform = () => {
-  if (!(typeof window === 'undefined')) {
-    const device = DeviceDetector(navigator.userAgent);
-    if (device.device.type && device.device.type === 'mobile') {
-      return 'mobile_web';
-    } else {
-      return 'website';
-    }
-  } else {
-    return 'website';
-  }
-};
-
 export const formatAgeCategory = (stt: string) => {
   return listAgeCategory.find((el: some) => el.code == stt)?.name;
-};
-
-export const getDeviceInfo = () => {
-  if (!(typeof window === 'undefined')) {
-    const device = DeviceDetector(navigator.userAgent);
-    if (device.device.type && device.device.type === 'mobile') {
-      return 'Mobile-Web';
-    } else {
-      return 'PC-Web';
-    }
-  } else {
-    return 'Server-web';
-  }
 };
 
 export const removeAccent = (str: string) => {
@@ -124,39 +74,13 @@ export const isSameAirline = (booking: some) => {
 };
 
 export const adapterQueryFlight = (formData: some = {}, paging: some = {}) => {
-  let result: some = {};
-  let filtersTemp: some = { ...formData };
-  delete filtersTemp.filedAdds;
-  if (!isEmpty(formData?.createdDate)) {
-    filtersTemp = {
-      ...filtersTemp,
-      createdFromDate: formData.createdDate.createdFromDate,
-      createdToDate: formData.createdDate.createdToDate,
-    };
-    delete filtersTemp.createdDate;
-  }
-  if (!isEmpty(formData?.departureDate)) {
-    filtersTemp = {
-      ...filtersTemp,
-      departureFromDate: formData.departureDate.departureFromDate,
-      departureToDate: formData.departureDate.departureToDate,
-    };
-    delete filtersTemp.departureDate;
-  }
-  if (!isEmpty(formData?.others)) {
-    formData?.others?.forEach((el: string) => {
-      filtersTemp = {
-        ...filtersTemp,
-        [el]: true,
-      };
-    });
-    delete filtersTemp.others;
-  }
-  result = {
-    filters: filtersTemp,
-    paging,
+  return {
+    bookingId: formData.dealId,
+    userId: formData.userId,
+    status: formData.confirmStatus,
+    page: paging.page,
+    size: paging.size,
   };
-  return result;
 };
 
 export const formatMoney = (amount: any = 0, decimalLength = 0, decimal = '.', thousands = ',') => {

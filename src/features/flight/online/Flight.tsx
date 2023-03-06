@@ -27,8 +27,8 @@ const Flight = () => {
   const getPramsQuery = () => {
     let formTemp = {};
     let paging = {
-      page: 1,
-      pageSize: 10,
+      page: 0,
+      size: 10,
     };
     if (!isEmpty(location.search)) {
       let createdDate = {};
@@ -36,8 +36,6 @@ const Flight = () => {
       for (const entry of searchParams.entries()) {
         const [param, value] = entry;
         if (
-          param === 'filedAdds' ||
-          param === 'agentList' ||
           param === 'handlingStatuses' ||
           param === 'paymentStatuses' ||
           param === 'paymentMethods' ||
@@ -99,6 +97,7 @@ const Flight = () => {
       <span className='title'>
         <FormattedMessage id='IDS_TEXT_LIST_FLIGHT_ONLINE_TITLE' />
       </span>
+      <Filter />
       <ContentData />
       <InputBackTop />
     </div>

@@ -7,7 +7,6 @@ import {
   getFlightBookingsDetailNew,
   getFlightBookingsOffline,
   getGeneralInfo,
-  getSalesList,
 } from '~/apis/flight';
 import { DEFAULT_PAGING } from '~/features/flight/constant';
 import { BookingsOnlineType, PagingOnline } from '~/features/flight/online/Modal';
@@ -35,7 +34,6 @@ export interface SystemState {
   generalInfo: some;
   flightBookingPostProcessing: some;
   totalBookingsOnline: number;
-  agencies: some[];
 }
 
 const initialState: SystemState = {
@@ -44,38 +42,37 @@ const initialState: SystemState = {
   totalBookingsOnline: 0,
   filterOnline: {},
   pagingOnline: {
-    page: 1,
-    pageSize: 10,
+    page: 0,
+    size: 10,
   },
   bookingsOffline: [],
   filterOffline: {},
   pagingOffline: {
-    page: 1,
-    pageSize: 10,
+    page: 0,
+    size: 10,
   },
   flightOnlineDetail: {},
   total: 0,
   salesList: [],
   generalInfo: {},
   flightBookingPostProcessing: {},
-  agencies: [],
 };
 
 export const fetFlightBookings = createAsyncThunk(
   'system/fetFlightBookings',
   async (query: some = {}) => {
     try {
-      const { formData = {}, isFilter = true, paging = { page: 1, pageSize: 10 } } = query;
+      const { formData = {}, isFilter = true, paging = { page: 0, size: 10 } } = query;
       const dataQuery = adapterQueryFlight(formData, paging);
       const { data } = await getFlightBookings(dataQuery);
       if (data.code === 200) {
         return await {
           total: data?.data?.total,
-          bookings: data.data.bookings,
+          bookings: data.data.items,
           pagingOnline: isFilter
             ? {
-                page: 1,
-                pageSize: 10,
+                page: 0,
+                size: 10,
               }
             : paging,
           filterOnline: formData,
@@ -142,7 +139,7 @@ export const fetFlightBookingOffline = createAsyncThunk(
           bookings: data.data,
           pagingOffline: isFilter
             ? {
-                page: 1,
+                page: 0,
                 pageSize: 10,
               }
             : paging,
@@ -156,21 +153,6 @@ export const fetFlightBookingOffline = createAsyncThunk(
     }
   },
 );
-
-export const fetSalesList = createAsyncThunk('system/fetSalesList', async () => {
-  try {
-    const { data } = await getSalesList();
-    if (data.code === 200) {
-      const cars = data.data.filter(
-        (v: any, i: any, a: any) => a.findIndex((t: any) => t.id === v.id) === i,
-      );
-      return await cars;
-    }
-    return [];
-  } catch (error) {
-    console.log(error);
-  }
-});
 
 export const fetGeneralInfo = createAsyncThunk(
   'system/fetGeneralInfo',
@@ -241,9 +223,6 @@ export const flightSlice = createSlice({
       state.pagingOffline = action.payload.pagingOffline;
       state.filterOffline = action.payload.filterOffline;
       state.total = action.payload.total;
-    });
-    builder.addCase(fetSalesList.fulfilled, (state, action: PayloadAction<any>) => {
-      state.salesList = action.payload;
     });
     builder.addCase(fetGeneralInfo.fulfilled, (state, action: PayloadAction<any>) => {
       state.generalInfo = action.payload;

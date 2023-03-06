@@ -42,7 +42,7 @@ const Reconciliation: FC<Props> = (props) => {
   };
 
   const [pagingOnline, setPagingOnline] = useState({
-    page: 1,
+    page: 0,
     size: 0,
   });
   const [modal, setModal] = useState({
@@ -269,7 +269,7 @@ const Reconciliation: FC<Props> = (props) => {
   const fetFlightBookings = (formData: any, isFilter: boolean) => {
     if (isFilter) {
       const paging = {
-        page: 1,
+        page: 0,
         size: 20,
       };
       setPagingOnline(paging);

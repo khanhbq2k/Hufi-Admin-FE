@@ -1,14 +1,17 @@
 import { some } from '~/utils/constants/constant';
 
 export interface BookingsOnlineType {
-  orderCode: string;
-  caInfo: some;
-  id: number;
+  booking: some;
+  payment: some;
+  user: some;
+  tickets: some;
+  contact: some;
+  passengers: some;
 }
 
 export interface PagingOnline {
   page: number;
-  pageSize: number;
+  size: number;
 }
 
 export interface InvoiceFlightType {

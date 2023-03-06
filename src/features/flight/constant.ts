@@ -80,7 +80,7 @@ export const FORMAT_DAYS = [
   'Thứ sáu',
   'Thứ bảy',
 ];
-export const DEFAULT_PAGING = { page: 1, pageSize: 10 };
+export const DEFAULT_PAGING = { page: 0, size: 10 };
 export const SUCCESS_CODE = 200;
 
 export const OPTION_PNR_STATUS = [

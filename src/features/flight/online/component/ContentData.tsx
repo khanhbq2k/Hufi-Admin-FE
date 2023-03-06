@@ -1,6 +1,7 @@
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Col, Dropdown, Menu, Row, Select, Space, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import moment from 'moment';
 import { useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { IconRefreshGrayrice } from '~/assets';
@@ -13,12 +14,13 @@ import LastSale from '~/features/flight/online/component/LastSale';
 import '~/features/flight/online/FlightOnline.scss';
 import { BookingsOnlineType, PagingOnline } from '~/features/flight/online/Modal';
 import UnholdCreditModal from '~/features/payment_support/credit_hold_transaction/components/UnholdCreditModal';
+import { AirlinesType, AirportType } from '~/features/systems/systemSlice';
 import { some } from '~/utils/constants/constant';
+import { DATE_TIME_FORMAT } from '~/utils/constants/moment';
 
 import {
   formatMoney,
   getBookStatusFlight,
-  getPaymentStatusFlight,
   isEmpty,
   removeFieldEmptyFilter,
 } from '~/utils/helpers/helpers';
@@ -29,12 +31,6 @@ const ContentData = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [modal, setModal] = useState<some>({
-    type: undefined,
-    open: false,
-    item: {},
-  });
-
   const bookingsOnline: BookingsOnlineType[] = useAppSelector(
     (state) => state.flightReducer.bookingsOnline,
   );
@@ -44,15 +40,15 @@ const ContentData = () => {
   const totalBookingsOnline: number = useAppSelector(
     (state) => state.flightReducer.totalBookingsOnline,
   );
-  const [dataTable, setDataTable] = useState<any[]>(bookingsOnline);
+  // const [dataTable, setDataTable] = useState<any[]>(bookingsOnline);
 
   const onChangePagination = (page: number, size: number) => {
-    handleChangeRoute(filterOnline, { page, pageSize: size });
+    handleChangeRoute(filterOnline, { page: page - 1, size: size });
     dispatch(
       fetFlightBookings({
         formData: filterOnline,
         isFilter: false,
-        paging: { page, pageSize: size },
+        paging: { page: page - 1, size: size },
       }),
     );
   };
@@ -78,33 +74,23 @@ const ContentData = () => {
     );
   };
 
-  const onSelect = (value: any) => {
-    if (!value) {
-      setDataTable(bookingsOnline);
-    } else {
-      const arr = bookingsOnline.filter((el) => {
-        return el.id == value;
-      });
-      setDataTable(arr);
-    }
-  };
-
   const columns: ColumnsType<BookingsOnlineType> = [
     {
       title: 'Booking ID',
-      dataIndex: 'orderCode',
       key: 'orderCode',
+      width: 80,
+      align: 'center',
       render: (_, record) => {
         return (
           <div
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              window.open(`${location.pathname}/${record?.id}`, '_blank');
+              window.open(`${location.pathname}/${record?.booking?.bookingId}`, '_blank');
             }}
             style={{ padding: '12px auto' }}
           >
-            {record.id}
+            {record?.booking?.bookingId}
           </div>
         );
       },
@@ -112,6 +98,7 @@ const ContentData = () => {
     {
       title: 'Hành trình',
       key: 'in-out-bound',
+      width: 140,
       render: (_, record) => {
         return <InOutBound record={record} />;
       },
@@ -119,23 +106,34 @@ const ContentData = () => {
     {
       title: 'Khởi hành',
       key: 'start-out-bound',
-      dataIndex: 'outbound',
-      render: (text) => {
-        return <>{`${text?.departureDate} ${text?.departureTime}`}</>;
+      width: 140,
+      render: (_, record) => {
+        return <>{`${record?.tickets[0]?.departureDate} ${record?.tickets[0]?.departureTime}`}</>;
       },
     },
     {
       title: 'Ngày đặt',
       key: 'bookedDate',
-      dataIndex: 'bookedDate',
+      width: 140,
+      render: (_, record) => {
+        return <>{`${moment(record?.booking?.createdTime).format(DATE_TIME_FORMAT)}`}</>;
+      },
+    },
+    {
+      title: 'Người đăt',
+      key: 'bookedUser',
+      align: 'center',
+      render: (_, record) => {
+        return <>{record.user?.fullName}</>;
+      },
+      width: 120,
     },
     {
       title: 'Tổng tiền',
       key: 'totalSellingPrice',
-      dataIndex: 'totalSellingPrice',
       align: 'right',
-      render: (text) => {
-        return <>{`${formatMoney(text)}`}</>;
+      render: (_, record) => {
+        return <>{`${formatMoney(record?.payment?.totalAmount)}`}</>;
       },
       width: 120,
       className: 'column-total-price',
@@ -143,54 +141,16 @@ const ContentData = () => {
     {
       title: 'Trạng thái đặt vé',
       key: 'bookStatus',
-      dataIndex: 'bookStatus',
-      render: (text) => {
-        const status = getBookStatusFlight(text);
+      render: (_, record) => {
+        const status = getBookStatusFlight(record?.booking?.bookingStatus);
         return <Tag color={status.color}>{`${status?.title}`}</Tag>;
       },
       width: 140,
     },
   ];
 
-  const spToolsItem = () => {
-    return [
-      {
-        key: '1',
-        label: 'Thay đổi giới hạn giữ chỗ',
-        icon: <SearchOutlined />,
-        onClick: () => {
-          setModal({
-            open: false,
-            value: null,
-            type: 'unhold',
-            title: 'Thay đổi giới hạn giữ chỗ',
-          });
-        },
-      },
-    ];
-  };
-
   return (
     <>
-      <Row style={{ margin: '15px 0px' }}>
-        <Col span={4}>
-          <Select
-            className='ant-select-selection-search'
-            style={{ minWidth: 200 }}
-            placeholder='Mã đơn hàng'
-            showSearch
-            onSelect={onSelect}
-          >
-            {[{ id: null, name: 'Tất cả' }, ...bookingsOnline].map((elm: some, index: number) => {
-              return (
-                <Select.Option key={index} value={elm?.id}>
-                  {elm?.name}
-                </Select.Option>
-              );
-            })}
-          </Select>
-        </Col>
-      </Row>
       <Row className='title-total-items' justify='space-between'>
         <Col>
           <Space>
@@ -200,39 +160,32 @@ const ContentData = () => {
             </div>
           </Space>
         </Col>
-        {/* <Col>
-          <Dropdown placement='bottomRight' overlay={<Menu items={spToolsItem()} />}>
-            <Button type='primary' icon={<DownOutlined />}>
-              Công cụ hỗ trợ
-            </Button>
-          </Dropdown>
-        </Col> */}
       </Row>
       <Table
-        rowKey={(record) => record.orderCode}
+        rowKey={(record) => record.booking.bookingId}
         columns={columns}
-        dataSource={dataTable}
+        dataSource={bookingsOnline}
         loading={isLoading}
         pagination={false}
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
-              window.open(`${location.pathname}/${record?.id}`, '_self');
+              window.open(`${location.pathname}/${record?.booking.bookingId}`, '_self');
             },
           };
         }}
       />
-      {!isEmpty(dataTable) &&
-        !(pagingOnline.page === 1 && dataTable.length < pagingOnline.pageSize) && (
+      {!isEmpty(bookingsOnline) &&
+        !(pagingOnline.page === 1 && bookingsOnline.length < pagingOnline.size) && (
           <PaginationTable
-            page={pagingOnline.page - 1}
-            size={pagingOnline.pageSize}
+            page={pagingOnline.page}
+            size={pagingOnline.size}
             onChange={onChangePagination}
             totalElements={totalBookingsOnline}
           />
         )}
-      <SmsEmailModal modal={modal} setModal={setModal} />
-      <HoldingLimitationModal modal={modal} setModal={setModal} />
+      {/* <SmsEmailModal modal={modal} setModal={setModal} /> */}
+      {/* <HoldingLimitationModal modal={modal} setModal={setModal} /> */}
     </>
   );
 };

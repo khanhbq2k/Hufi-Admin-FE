@@ -28,8 +28,7 @@ export const uploadImagePublic = (data = {}) => {
 export const getUserInfo = () => {
   const option = {
     method: 'get',
-    url: '/helpDesk/auth/validateAccessToken',
-    serVice: CRM_SERVICE,
+    url: '/auth/user',
   };
   return api(option);
 };
@@ -52,20 +51,19 @@ export const logoutAuth = () => {
   return api(option);
 };
 
-export const getAllowAgents = () => {
+export const getAirlines = () => {
   const option = {
     method: 'get',
-    url: '/helpDesk/getAllowAgents',
-    serVice: CRM_SERVICE,
+    url: '/flight/airlines',
   };
   return api(option);
 };
 
-export const getAirlines = () => {
+export const getAirports = (params = {}) => {
   const option = {
     method: 'get',
-    url: '/guru/airlines',
-    serVice: FLYX_SERVICE,
+    url: '/flight/airports',
+    params,
   };
   return api(option);
 };

@@ -7,12 +7,11 @@ import {
   TRIPIONE_SERVICE,
 } from './../utils/constants/constant';
 
-export const getFlightBookings = (data = {}) => {
+export const getFlightBookings = (params = {}) => {
   const option = {
-    method: 'post',
-    url: '/helpDesk/getFlightBookings',
-    data,
-    serVice: CRM_SERVICE,
+    method: 'get',
+    url: '/crm/flight/booking',
+    params,
   };
   return api(option);
 };
@@ -20,8 +19,34 @@ export const getFlightBookings = (data = {}) => {
 export const getFlightBookingsDetailNew = (data: some = {}) => {
   const option = {
     method: 'get',
-    url: '/helpDesk/getFlightBookingDetail/' + data?.id,
-    serVice: CRM_SERVICE,
+    url: '/crm/flight/booking/' + data?.id,
+  };
+  return api(option);
+};
+
+export const getFlightExtractors = (params = {}) => {
+  const option = {
+    method: 'get',
+    url: '/crm/flight/extractor',
+    params,
+  };
+  return api(option);
+};
+
+export const activateFlightExtractor = (data: some = {}) => {
+  const option = {
+    method: 'post',
+    url: '/crm/flight/extractor/activate',
+    data,
+  };
+  return api(option);
+};
+
+export const deactivateFlightExtractor = (data: some = {}) => {
+  const option = {
+    method: 'post',
+    url: '/crm/flight/extractor/deactivate',
+    data,
   };
   return api(option);
 };
@@ -241,16 +266,6 @@ export const cancelHandlingBooking = (data = {}) => {
     url: 'helpDesk/cancelHandlingBooking',
     serVice: CRM_SERVICE,
     data,
-  };
-  return api(option);
-};
-
-export const getSalesList = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/helpDesk/getSalesList',
-    serVice: CRM_SERVICE,
-    params,
   };
   return api(option);
 };

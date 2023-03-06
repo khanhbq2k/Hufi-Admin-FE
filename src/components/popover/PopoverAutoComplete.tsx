@@ -53,7 +53,6 @@ const PopoverAutoComplete: FC<PopoverInputProps> = ({
   const onSelect = (value: any) => {
     const itemSelected: some | undefined = options.find((el: some) => el.name === value);
     let listField = form.getFieldValue('filedAdds');
-    console.log('listField', listField);
     if (!listField.includes('rootHotelId')) {
       listField = [...listField, 'rootHotelId'];
     }

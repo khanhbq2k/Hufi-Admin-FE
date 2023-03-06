@@ -55,8 +55,10 @@ export const routes = {
   LANDING: '/landing',
   SALE: 'sale',
   FLIGHT: 'flight',
+  FLIGHT_EXTRACTOR: 'extractors',
   FLIGHT_ONLINE: 'online',
   FLIGHT_OFFLINE: 'airlines',
+  FLIGHT_USER: 'user',
   FLIGHT_RECONCILIATION_ERROR: 'user',
   FLIGHT_ADD_NEW_TICKET: 'add-new-offline-flight-ticket',
   HOTEL: 'hotel',
@@ -76,28 +78,6 @@ export const routes = {
   SUPPORT_TOOLS: 'support-tools',
   PAYMENT_TOOL: 'payment-tools',
   CREDIT_TRANSFER: 'credit-transfer',
-};
-
-export const ROLES_APP = {
-  ANALYTICS_ROLE: 'analytics',
-  ADMIN_ROLE: 'admin',
-  SALE: 'sale',
-};
-
-export const MAIN_ROLES = {
-  SALE: 'crm:sale',
-  MARKETING: 'crm:sale-manager',
-  OTHER: 'other',
-  ADMIN: 'crm:admin',
-  SUPPORT: 'support',
-  ACCOUNTANT: 'crm:accountant',
-  SALE_MANAGER: 'crm:sale-manager',
-};
-
-export const ROLE_TABLE = {
-  [routes.ANALYTICS]: [ROLES_APP.ANALYTICS_ROLE, ROLES_APP.ADMIN_ROLE],
-  [routes.ADMIN]: [ROLES_APP.ADMIN_ROLE],
-  [routes.SALE]: [ROLES_APP.SALE],
 };
 
 // list data option cho ô search flight
@@ -143,12 +123,12 @@ export const agentList: ItemListOptionFilterFlight[] = [
 ];
 export interface ItemListOptionFilterStatusFlight {
   name: string;
-  id: boolean;
+  id: 'success' | 'pending';
 }
 // Trạng thái đặt vé
 export const confirmStatusList: ItemListOptionFilterStatusFlight[] = [
-  { name: 'Đã xác nhận', id: true },
-  { name: 'Chưa xác nhận', id: false },
+  { name: 'Đã xác nhận', id: 'success' },
+  { name: 'Chưa xác nhận', id: 'pending' },
 ];
 // lua chon khac
 export const otherListSearchFlight: ItemotherListSearchFlight[] = [

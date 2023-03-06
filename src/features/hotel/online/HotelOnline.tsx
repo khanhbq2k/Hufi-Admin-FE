@@ -27,7 +27,7 @@ const HotelOnline = () => {
   const getPramsQuery = () => {
     let formTemp = {};
     let paging = {
-      page: 1,
+      page: 0,
       pageSize: 10,
     };
     if (!isEmpty(location.search)) {

@@ -32,8 +32,8 @@ const initialState: SystemState = {
   totalBookingsOnline: 0,
   filterOnline: {},
   pagingOnline: {
-    page: 1,
-    pageSize: 10,
+    page: 0,
+    size: 10,
   },
   hotelOnlineDetail: {},
   hotelOnlineDetailV2: {},
@@ -45,7 +45,7 @@ export const fetHotelBookings = createAsyncThunk(
   'system/fetHotelBookings',
   async (query: some = {}) => {
     try {
-      const { formData = {}, isFilter = true, paging = { page: 1, pageSize: 10 } } = query;
+      const { formData = {}, isFilter = true, paging = { page: 0, pageSize: 10 } } = query;
       const dataQuery = adapterQueryHotel(formData, paging);
       const { data } = await hotelBookingRequests(dataQuery);
       if (data.code === 200) {
@@ -54,7 +54,7 @@ export const fetHotelBookings = createAsyncThunk(
           bookings: data.data,
           pagingOnline: isFilter
             ? {
-                page: 1,
+                page: 0,
                 pageSize: 10,
               }
             : paging,

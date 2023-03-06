@@ -93,7 +93,7 @@ const AddInvoiceFlight = (props: any) => {
       const { data } = await getActiveBenefitPackages({
         bookingId: modal.item.id,
         module: module,
-        page: 1,
+        page: 0,
         size: 10,
       });
       if (data.code === 200) {

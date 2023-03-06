@@ -13,15 +13,15 @@ const InOutBound: FC<InOutBoundType> = (props: some) => {
   const { record } = props;
   const airlines: AirlinesType[] = useAppSelector((state) => state.systemReducer.airlines);
 
-  const getIcon = (airlineId: number) => {
-    const item = airlines.find((el) => el?.id === airlineId);
-    return item?.logo || '';
+  const getIcon = (code: string) => {
+    const item = airlines.find((el) => el?.code === code);
+    return item?.logoUrl || '';
   };
 
   const getLocationName = () => {
-    let result = `${record?.outbound?.fromAirport} -> ${record?.outbound?.toAirport}`;
-    if (record.isTwoWay) {
-      result += ` -> ${record?.inbound?.toAirport}`;
+    let result = `${record?.tickets[0]?.departureAirport} -> ${record?.tickets[0]?.arrivalAirport}`;
+    if (record?.tickets[1]) {
+      result += ` -> ${record?.tickets[1]?.arrivalAirport}`;
     }
     return result;
   };
@@ -29,12 +29,16 @@ const InOutBound: FC<InOutBoundType> = (props: some) => {
   return (
     <div className='in-out-container'>
       <div className='list-icon-airline'>
-        {!isEmpty(getIcon(record?.outbound?.airlineId)) && (
-          <img src={getIcon(record?.outbound?.airlineId)} alt='' className='icon-airline' />
-        )}
-        {record.isTwoWay && !isEmpty(getIcon(record?.inbound?.airlineId)) && (
+        {!isEmpty(getIcon(record?.tickets[0]?.marketingAirline)) && (
           <img
-            src={getIcon(record?.inbound?.airlineId)}
+            src={getIcon(record?.tickets[0]?.marketingAirline)}
+            alt=''
+            className='icon-airline'
+          />
+        )}
+        {record.tickets[1] && !isEmpty(getIcon(record?.tickets[1]?.marketingAirline)) && (
+          <img
+            src={getIcon(record?.tickets[1]?.marketingAirline)}
             alt=''
             className='icon-airline icon-airline-right'
           />
