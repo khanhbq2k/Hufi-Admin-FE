@@ -5,7 +5,7 @@ import { useAppSelector } from '~/utils/hook/redux';
 
 const HeaderFlight = () => {
   const intl = useIntl();
-  const { flightOnlineDetail } = useAppSelector((state: some) => state?.flightReducer);
+  const booking = useAppSelector((state: some) => state?.flightReducer.flightOnlineDetail);
 
   return (
     <div>
@@ -13,22 +13,10 @@ const HeaderFlight = () => {
       <div className='wrapper-header-title'>
         <div className='bookedInfo'>
           <h2 style={{ marginBottom: 5 }}>
-            {intl.formatMessage({ id: 'IDS_TEXT_ORDER_DETAILS' })}: {flightOnlineDetail?.orderCode}
+            {intl.formatMessage({ id: 'IDS_TEXT_ORDER_DETAILS' })}: {booking?.booking?.bookingId}
           </h2>
           <div className='text-grey'>
-            {flightOnlineDetail?.orderId && <span> {`Order: ${flightOnlineDetail?.orderId}`}</span>}
-            {flightOnlineDetail?.parentId && (
-              <span>
-                Tách từ{' '}
-                <a
-                  className='text-blue'
-                  target={'_blank'}
-                  href={`/sale/flight/online/${flightOnlineDetail?.parentId}`}
-                >
-                  {flightOnlineDetail?.parentId}
-                </a>
-              </span>
-            )}
+            {booking?.booking?.bookingId && <span> {`Order: ${booking?.booking?.bookingId}`}</span>}
           </div>
         </div>
       </div>

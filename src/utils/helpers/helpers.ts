@@ -49,7 +49,7 @@ export const getAbsoluteMonths = (momentDate: any) => {
 };
 
 export const isHandling = (booking: some, userInfo: some) => {
-  return booking?.lastSaleId === userInfo?.id && booking.handlingStatus == 'handling';
+  return true;
 };
 
 export const getMonthDifference = (startDate: any, endDate: any) => {
@@ -59,18 +59,7 @@ export const getMonthDifference = (startDate: any, endDate: any) => {
 };
 
 export const isSameAirline = (booking: some) => {
-  if (!booking) {
-    return false;
-  }
-  return (
-    booking.isTwoWay &&
-    booking.outbound &&
-    booking.inbound &&
-    booking.outbound?.airline == booking.inbound?.airline &&
-    booking.inboundPnrCode &&
-    booking.inboundPnrCode &&
-    booking.inboundPnrCode == booking.outboundPnrCode
-  );
+  return true;
 };
 
 export const adapterQueryFlight = (formData: some = {}, paging: some = {}) => {
@@ -262,47 +251,12 @@ export const getStatusFlight = (status: any) => {
         backGround: '#FFFAEE',
         detailTitle: 'Chưa thanh toán',
       };
-    case 'holding':
-      return {
-        title: 'Đang giữ chỗ',
-        color: '#FFB30F',
-        backGround: '#FFFAEE',
-        detailTitle: 'Đang giữ chỗ',
-      };
-    case 'waiting_payment':
-      return {
-        title: 'Chờ thanh toán',
-        color: '#FFB30F',
-        backGround: '#FFFAEE',
-        detailTitle: 'Chờ thanh toán',
-      };
-    case 'in_progress':
-      return {
-        title: 'Đang xử lý',
-        color: '#FFB30F',
-        backGround: '#FFFAEE',
-        detailTitle: 'Đang xử lý',
-      };
     case 'failed':
       return {
         title: 'Xuất vé thất bại',
         color: '#FF2C00',
         backGround: '#FFF0ED',
         detailTitle: 'Xuất vé thất bại',
-      };
-    case 'voided':
-      return {
-        title: 'Đã hủy vé',
-        color: '#FF2C00',
-        backGround: '#FFF0ED',
-        detailTitle: 'Đã hủy vé',
-      };
-    case 'refunded':
-      return {
-        title: 'Đã hoàn tiền',
-        color: '#FF2C00',
-        backGround: '#FFF0ED',
-        detailTitle: 'Đã hoàn tiền',
       };
     case 'success':
       return {
@@ -416,36 +370,14 @@ export const listPnrStatus = [
     color: '#FFB30F',
   },
   {
-    title: 'Đã hủy',
-    stt: 'voided',
-    color: '#FF2C00',
-  },
-  {
-    title: 'Đang giữ',
-    stt: 'holding',
-    color: '#FFB30F',
-  },
-  {
     title: 'Đã xuất',
-    stt: 'confirmed',
+    stt: 'success',
     color: '#007864',
   },
   {
     title: 'Thất bại',
     stt: 'failed',
     color: '#FF2C00',
-  },
-  {
-    title: 'Đang xử lý',
-    stt: 'in_progress',
-    disable: true,
-    color: '#FFB30F',
-  },
-  {
-    title: 'Chưa xác định',
-    stt: null || 'undecided',
-    disable: true,
-    color: '#FFB30F',
   },
 ];
 
@@ -628,7 +560,7 @@ export const getInvoiceStatusFlight = (invoiceStatus: any) => {
 
 export const getPaymentHistoryStatus = (historyStatus: string) => {
   switch (historyStatus) {
-    case 'settled': {
+    case 'success': {
       return {
         title: 'Thành công',
         color: '#158C32',

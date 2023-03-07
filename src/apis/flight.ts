@@ -10,7 +10,7 @@ export const getFlightBookings = (params = {}) => {
   return api(option);
 };
 
-export const getFlightBookingsDetailNew = (data: some = {}) => {
+export const getFlightBookingsDetail = (data: some = {}) => {
   const option = {
     method: 'get',
     url: '/crm/flight/booking/' + data?.id,
@@ -45,114 +45,6 @@ export const deactivateFlightExtractor = (data: some = {}) => {
   return api(option);
 };
 
-export const getActiveBankTransferList = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/checkout/getActiveBankTransferList',
-    params,
-  };
-  return api(option);
-};
-
-export const getSupportPaySms = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/helpDesk/supportpaysms',
-    params,
-  };
-  return api(option);
-};
-
-export const updateSupportPaySms = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/supportpaysms',
-    data,
-  };
-  return api(option);
-};
-
-export const getConfirmationSms = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/getConfirmationSms',
-    data,
-  };
-  return api(option);
-};
-
-export const sendSmsToCustomer = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/sendSmsToCustomer',
-    data,
-  };
-  return api(option);
-};
-
-export const getBookerRequests = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/getBookerRequests',
-    data,
-  };
-  return api(option);
-};
-
-export const getVatInvoiceDetail = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/vat-invoices/requests/detail',
-    params,
-  };
-  return api(option);
-};
-
-export const deleteVatInvoiceDetail = (params = {}) => {
-  const option = {
-    method: 'put',
-    url: '/vat-invoices/requests/cancel',
-    params,
-  };
-  return api(option);
-};
-
-export const getActiveBenefitPackages = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/helpDesk/getActiveBenefitPackages',
-    params,
-  };
-  return api(option);
-};
-
-export const getVatInvoiceOrder = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/vat-invoices/orders',
-    params,
-  };
-  return api(option);
-};
-
-export const updateBookingPriceDetails = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/flight/updateBookingPriceDetails',
-    data,
-  };
-  return api(option);
-};
-
-export const supportPayMail = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/helpDesk/supportpaymail',
-    params,
-  };
-  return api(option);
-};
-
 export const validateBookingInfoByReservation = (data = {}) => {
   const option = {
     method: 'post',
@@ -166,78 +58,6 @@ export const fetchPatchBookingInfoByReservation = (data = {}) => {
   const option = {
     method: 'post',
     url: '/flights/patchBookingInfoByReservation',
-    data,
-  };
-  return api(option);
-};
-
-export const getPaymentGuideEmail = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/helpDesk/getPaymentGuideEmail',
-    params,
-  };
-  return api(option);
-};
-
-export const getConfirmationEmail = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/getConfirmationEmail',
-    data,
-  };
-  return api(option);
-};
-
-export const sendEmail = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/sendEmail',
-    data,
-  };
-  return api(option);
-};
-
-export const getEnterpriseInfo = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/utils/getEnterpriseInfo',
-    data,
-  };
-  return api(option);
-};
-
-export const requestVatInvoices = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/vat-invoices/requests',
-    data,
-  };
-  return api(option);
-};
-
-export const paymentTransactionHistory = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/payment/internal/transaction-history',
-    params,
-  };
-  return api(option);
-};
-
-export const handleBooking = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: 'helpDesk/handleBooking',
-    data,
-  };
-  return api(option);
-};
-
-export const assignBooking = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/assignBooking',
     data,
   };
   return api(option);
@@ -510,16 +330,6 @@ export const getFlightBookingNote = (params = {}) => {
   const option = {
     method: 'get',
     url: '/helpDesk/getBookingRemark',
-
-    params,
-  };
-  return api(option);
-};
-
-export const getGeneralInfo = (params = {}) => {
-  const option = {
-    method: 'get',
-    url: '/helpDesk/postProcessing/getGeneralInfo',
 
     params,
   };

@@ -3,28 +3,21 @@ import { useEffect, useState } from 'react';
 import { updateFlightBookingCodes } from '~/apis/flight';
 import { IconEdit } from '~/assets';
 import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
-import ModalRebookTicket from '~/features/flight/online/detail/components/detailBookingInfo/modal/ModalRebookTicket';
 import { some } from '~/utils/constants/constant';
-import { formatMoney, getPnrStatus, isHandling, listPnrStatus } from '~/utils/helpers/helpers';
+import { formatMoney, isHandling, listPnrStatus } from '~/utils/helpers/helpers';
 import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
 
-interface Props {
-  generalInfo: some;
-}
-
 const { Option } = Select;
-const FormOutboundCode: React.FunctionComponent<Props> = (props) => {
-  const { generalInfo } = props;
-
+const FormOutboundCode: any = () => {
   const dispatch = useAppDispatch();
   const [editForm, setEditForm] = useState<boolean>(false);
-  const [modalRebookTicket, setModalRebookTicket] = useState<boolean>(false);
 
+  const airlines = useAppSelector((state) => state.systemReducer.airlines);
   const userInfo = useAppSelector((state) => state.systemReducer.userInfo);
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
 
   const [form] = Form.useForm();
-  const outboundPnrStatus = listPnrStatus.find((el) => el.stt == booking?.outboundPnrStatus);
+  const outboundPnrStatus = listPnrStatus.find((el) => el.stt == booking?.booking?.bookingStatus);
 
   const updateFlightBookingCode = async (queryParams: any) => {
     try {
@@ -32,7 +25,7 @@ const FormOutboundCode: React.FunctionComponent<Props> = (props) => {
       if (data.code === 200) {
         message.success(' Cập nhật mã vé chiều đi thành công!');
         setEditForm(false);
-        dispatch(fetFlightBookingsDetail({ filters: { dealId: booking.id } }));
+        dispatch(fetFlightBookingsDetail({ id: booking?.booking?.bookingId }));
       } else {
         message.error(data?.message);
       }
@@ -43,17 +36,12 @@ const FormOutboundCode: React.FunctionComponent<Props> = (props) => {
 
   useEffect(() => {
     form.setFieldsValue({
-      outboundCode: booking?.outboundPnrCode,
-      outboundStatus: booking?.outboundPnrStatus,
-      outboundAgentId: booking?.outboundAgentId,
+      outboundCode: booking?.tickets[0].reservationCode,
+      outboundStatus: booking?.booking.bookingStatus,
+      outboundAirline: booking?.tickets[0].marketingAirline,
     });
   }, [booking, editForm]);
 
-  const isReserveSeat =
-    ((!booking?.isTwoWay && !booking?.outboundPnrCode) ||
-      (booking?.isTwoWay && (!booking?.outboundPnrCode || !booking?.inboundPnrCode))) &&
-    booking?.lastSaleId === userInfo?.id &&
-    booking.paymentStatus == 'pending';
   const isHandLing = isHandling(booking, userInfo);
 
   return (
@@ -64,16 +52,18 @@ const FormOutboundCode: React.FunctionComponent<Props> = (props) => {
       <Col className='air-box'>
         {!editForm ? (
           <>
-            <span className='text-grey text-sm'>{booking?.outboundAgentId}</span>
-            <Tag color='success'>{booking?.outboundPnrCode || 'Chưa có'}</Tag>
+            <span>
+              <b>{booking?.tickets[0].marketingAirline}</b>
+            </span>
+            <Tag color='success'>{booking?.tickets[0].reservationCode || 'Chưa có'}</Tag>
             <span style={{ color: outboundPnrStatus?.color }}>{outboundPnrStatus?.title}</span>
             {isHandLing && <IconEdit className='pointer' onClick={() => setEditForm(true)} />}
           </>
         ) : (
           <Form form={form} className='form-code'>
-            <Form.Item name='outboundAgentId'>
+            <Form.Item name='outboundAirline'>
               <Select size='small' style={{ width: 200 }}>
-                {generalInfo.agencies?.map((value: some) => {
+                {airlines.map((value: some) => {
                   return (
                     <Option key={value.code} value={value.code}>
                       {`${value.code} - ${value.name}`}{' '}
@@ -100,16 +90,14 @@ const FormOutboundCode: React.FunctionComponent<Props> = (props) => {
               placement='top'
               title='Bạn có chắc chắn muốn sửa mã đặt vé?'
               onConfirm={() => {
-                const { outboundStatus, outboundCode, outboundAgentId } =
+                const { outboundStatus, outboundCode, outboundAirline } =
                   form?.getFieldsValue(true);
                 updateFlightBookingCode({
-                  bookingId: booking?.id,
-                  agencyId:
-                    generalInfo.agencies?.find((el: some) => el.code == outboundAgentId)?.id ||
-                    null,
+                  bookingId: booking?.booking?.bookingId,
                   pnr: outboundCode,
                   status: outboundStatus,
-                  ticketId: booking?.outbound?.ticketId,
+                  airline: outboundAirline,
+                  ticketId: booking?.ticket[0]?.id,
                 });
               }}
               okText='Ok'
@@ -122,29 +110,13 @@ const FormOutboundCode: React.FunctionComponent<Props> = (props) => {
             <Button onClick={() => setEditForm(false)}>Hủy</Button>
           </Form>
         )}
-        {/* {isReserveSeat && (
-          <Col style={{ marginLeft: 22 }}>
-            <Button
-              onClick={(event) => {
-                event.stopPropagation();
-                setModalRebookTicket(true);
-              }}
-              size='small'
-              className='relay-btn'
-              type='primary'
-            >
-              Giữ chỗ
-            </Button>
-          </Col>
-        )} */}
       </Col>
       <Col style={{ flex: 1 }}>
         <Divider />
       </Col>
       <Col>
-        <span>{`Giá fare ${formatMoney(booking?.outbound?.farePrice)}`} </span>
+        <span>{`Giá fare ${formatMoney(booking?.tickets[0]?.farePrice)}`} </span>
       </Col>
-      <ModalRebookTicket modal={modalRebookTicket} setModal={setModalRebookTicket} />
     </Row>
   );
 };

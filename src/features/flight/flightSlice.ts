@@ -1,16 +1,9 @@
+import { getFlightBookingsDetail } from './../../apis/flight';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import moment from 'moment';
-import {
-  getFlightBookingPostProcessing,
-  getFlightBookings,
-  getFlightBookingsDetailNew,
-  getGeneralInfo,
-} from '~/apis/flight';
-import { DEFAULT_PAGING } from '~/features/flight/constant';
+import { getFlightBookings } from '~/apis/flight';
 import { BookingsOnlineType, PagingOnline } from '~/features/flight/online/Modal';
 import { some } from '~/utils/constants/constant';
-import { DATE_FORMAT_BACK_END } from '~/utils/constants/moment';
 import { adapterQueryFlight } from '~/utils/helpers/helpers';
 
 export interface AllowAgentType {
@@ -27,8 +20,6 @@ export interface SystemState {
   flightOnlineDetail: some;
   total: number;
   salesList: some[];
-  generalInfo: some;
-  flightBookingPostProcessing: some;
   totalBookingsOnline: number;
 }
 
@@ -44,8 +35,6 @@ const initialState: SystemState = {
   flightOnlineDetail: {},
   total: 0,
   salesList: [],
-  generalInfo: {},
-  flightBookingPostProcessing: {},
 };
 
 export const fetFlightBookings = createAsyncThunk(
@@ -78,56 +67,8 @@ export const fetFlightBookings = createAsyncThunk(
 export const fetFlightBookingsDetail = createAsyncThunk(
   'system/fetFlightBookingsDetail',
   async (query: some = {}) => {
-    const params = {
-      id: query?.filters?.dealId,
-    };
     try {
-      const { data } = await getFlightBookingsDetailNew(params);
-      if (data.code === 200) {
-        return await data.data.bookings[0];
-      }
-      return [];
-    } catch (error) {
-      console.log(error);
-    }
-  },
-);
-
-export const fetFlightBookingsDetail1 = createAsyncThunk(
-  'system/fetFlightBookingsDetail1',
-  async (query: some = {}) => {
-    try {
-      const { data } = await getFlightBookingsDetailNew(query);
-      if (data.code === 200) {
-        return await data.data.bookings[0];
-      }
-      return [];
-    } catch (error) {
-      console.log(error);
-    }
-  },
-);
-
-export const fetGeneralInfo = createAsyncThunk(
-  'system/fetGeneralInfo',
-  async (query: some = {}) => {
-    try {
-      const { data } = await getGeneralInfo(query);
-      if (data.code === 200) {
-        return await data.data;
-      }
-      return [];
-    } catch (error) {
-      console.log(error);
-    }
-  },
-);
-
-export const fetFlightBookingPostProcessing = createAsyncThunk(
-  'system/fetFlightBookingPostProcessing',
-  async (query: some = {}) => {
-    try {
-      const { data } = await getFlightBookingPostProcessing(query);
+      const { data } = await getFlightBookingsDetail(query);
       if (data.code === 200) {
         return await data.data;
       }
@@ -157,26 +98,13 @@ export const flightSlice = createSlice({
       state.filterOnline = action.payload.filterOnline;
       state.totalBookingsOnline = action.payload.total;
     });
-    builder.addCase(fetFlightBookingsDetail1.pending, (state) => {
+    builder.addCase(fetFlightBookingsDetail.pending, (state) => {
       state.isLoading = true;
-    });
-    builder.addCase(fetFlightBookingsDetail1.fulfilled, (state, action: PayloadAction<any>) => {
-      state.isLoading = false;
-      state.flightOnlineDetail = action.payload;
     });
     builder.addCase(fetFlightBookingsDetail.fulfilled, (state, action: PayloadAction<any>) => {
       state.isLoading = false;
       state.flightOnlineDetail = action.payload;
     });
-    builder.addCase(fetGeneralInfo.fulfilled, (state, action: PayloadAction<any>) => {
-      state.generalInfo = action.payload;
-    });
-    builder.addCase(
-      fetFlightBookingPostProcessing.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.flightBookingPostProcessing = action.payload;
-      },
-    );
   },
 });
 

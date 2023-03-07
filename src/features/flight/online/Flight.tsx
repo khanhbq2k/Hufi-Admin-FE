@@ -31,41 +31,9 @@ const Flight = () => {
       size: 10,
     };
     if (!isEmpty(location.search)) {
-      let createdDate = {};
-      let departureDate = {};
       for (const entry of searchParams.entries()) {
         const [param, value] = entry;
-        if (
-          param === 'handlingStatuses' ||
-          param === 'paymentStatuses' ||
-          param === 'paymentMethods' ||
-          param === 'others'
-        ) {
-          formTemp = {
-            ...formTemp,
-            [param]: value.split(',').map(String),
-          };
-        } else if (param === 'airlineIds' || param === 'caIds') {
-          formTemp = {
-            ...formTemp,
-            [param]: value.split(',').map(Number),
-          };
-        } else if (param === 'createdFromDate' || param === 'createdToDate') {
-          createdDate = {
-            ...createdDate,
-            [param]: value,
-          };
-        } else if (param === 'departureFromDate' || param === 'departureToDate') {
-          departureDate = {
-            ...departureDate,
-            [param]: value,
-          };
-        } else if (param === 'confirmStatus') {
-          formTemp = {
-            ...formTemp,
-            [param]: value === 'true' ? true : false,
-          };
-        } else if (param === 'page' || param === 'pageSize') {
+        if (param === 'page' || param === 'pageSize') {
           paging = {
             ...paging,
             [param]: value,
@@ -76,18 +44,6 @@ const Flight = () => {
             [param]: value,
           };
         }
-      }
-      if (!isEmpty(createdDate)) {
-        formTemp = {
-          ...formTemp,
-          createdDate,
-        };
-      }
-      if (!isEmpty(departureDate)) {
-        formTemp = {
-          ...formTemp,
-          departureDate,
-        };
       }
       return { formTemp, paging };
     }

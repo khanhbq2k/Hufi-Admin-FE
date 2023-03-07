@@ -1,12 +1,10 @@
-import { Alert, BackTop, message, Tabs } from 'antd';
+import { Alert, BackTop, Tabs } from 'antd';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { IconCaretUp } from '~/assets';
-import { fetFlightBookingsDetail1, fetGeneralInfo } from '~/features/flight/flightSlice';
+import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
 import InfoFlight from '~/features/flight/online/detail/components/detailBookingInfo/InfoFlight';
 import HeaderFlight from '~/features/flight/online/detail/components/headerFlight/HeaderFlight';
-import InvoiceFlight from '~/features/flight/online/detail/components/invoice/InvoiceFlight';
-import NoteTabs from '~/features/flight/online/detail/components/note/NoteTabs';
 import PaymentHistory from '~/features/flight/online/detail/components/PaymentHistory';
 import SkeletonFlightDetail from '~/features/flight/online/detail/components/SkeletonFlightDetail';
 import '~/features/flight/online/detail/FlightDetail.scss';
@@ -24,16 +22,9 @@ const FlightDetail = () => {
   const collapsible: boolean = useAppSelector((state) => state.systemReducer.collapsible);
 
   useEffect(() => {
-    document.title = `Chi tiết đơn hàng vé máy bay online F${id}`;
-    getFlightBookingsDetail();
+    document.title = `Chi tiết đơn hàng vé máy bay ${id}`;
+    dispatch(fetFlightBookingsDetail({ id: id }));
   }, []);
-
-  const getFlightBookingsDetail = async () => {
-    const { payload } = await dispatch(fetFlightBookingsDetail1({ id: id }));
-    if (!isEmpty(payload)) {
-      dispatch(fetGeneralInfo({ caId: payload?.caInfo?.id }));
-    }
-  };
 
   if (isLoading) return <SkeletonFlightDetail />;
   if (isEmpty(flightOnlineDetail))

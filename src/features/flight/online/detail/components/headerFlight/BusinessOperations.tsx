@@ -27,9 +27,7 @@ import { useAppSelector } from '~/utils/hook/redux';
 import ModalOriginTicket from '../detailBookingInfo/modal/ModalRebookTicket';
 import ChangeCustomer from '../modalDetailFlight/ChangeCustomer';
 import EditNoteToCustomer from '../modalDetailFlight/EditNoteToCustomer';
-import ListCustomerUpload from '../modalDetailFlight/ListCustomerUpload';
 import UpdateBookingPnr from '../modalDetailFlight/UpdateBookingPnr';
-import UploadFileExcel from '../modalDetailFlight/UploadFileExcel';
 
 export const itemsMenu = (dataItems: some) => {
   const { flightOnlineDetail, setModal } = dataItems;
@@ -229,10 +227,6 @@ export const getModalActionMenu = (modalData: some) => {
       return <ModalOriginTicket modal={modal?.open} setModal={handleCloseModal} />;
     case MODAL_KEY_MENU.EDIT_NOTE:
       return <EditNoteToCustomer modal={modal?.open} setModal={handleCloseModal} />;
-    // case MODAL_KEY_MENU.UPLOAD_FILE:
-    //   return <UploadFileExcel modal={modal?.open} setModal={setModal} />;
-    // case MODAL_KEY_MENU.UPLOAD_FILE_EXCEL:
-    //   return <ListCustomerUpload data={modal?.data} modal={modal?.open} setModal={setModal} />;
     case MODAL_KEY_MENU.UPDATE_BOOKING_PNR:
       return (
         <UpdateBookingPnr

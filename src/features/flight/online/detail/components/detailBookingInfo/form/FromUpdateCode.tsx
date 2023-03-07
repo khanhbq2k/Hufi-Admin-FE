@@ -9,12 +9,11 @@ import { some } from '~/utils/constants/constant';
 import { isHandling } from '~/utils/helpers/helpers';
 
 interface Props {
-  index: number;
   type: string;
   flightPNR: string;
 }
 
-const FromUpdateCode: React.FC<Props> = ({ flightPNR, type, index }) => {
+const FromUpdateCode: React.FC<Props> = ({ flightPNR, type }) => {
   const dispatch = useAppDispatch();
   const [editForm, setEditForm] = useState<boolean>(false);
 
@@ -53,13 +52,13 @@ const FromUpdateCode: React.FC<Props> = ({ flightPNR, type, index }) => {
               const { flightPNRs } = form.getFieldsValue(true);
               const dataInfo =
                 type === TYPE_TICKET_INFO.DEPARTURE ? booking?.departureInfo : booking?.returnInfo;
-              const arrayPNR = dataInfo?.flights?.map((val: some, indexPNR: number) =>
-                index === indexPNR ? flightPNRs : val?.flightPNR,
-              );
+              // const arrayPNR = dataInfo?.flights?.map((val: some, indexPNR: number) =>
+              //   index === indexPNR ? flightPNRs : val?.flightPNR,
+              // );
               fetUpdateFlightPNRCodes({
                 bookingId: booking?.id,
                 departure: type === TYPE_TICKET_INFO.DEPARTURE,
-                flightPNRs: arrayPNR,
+                flightPNRs: null,
               });
             }}
             okText='Ok'
