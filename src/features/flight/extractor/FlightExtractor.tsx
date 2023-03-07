@@ -6,7 +6,6 @@ import {
   deactivateFlightExtractor,
   getFlightExtractors,
 } from '~/apis/flight';
-import { fetChangeEnableBankList } from '~/apis/tools';
 import { some } from '~/utils/constants/constant';
 
 const FlightExtractor: React.FunctionComponent = () => {

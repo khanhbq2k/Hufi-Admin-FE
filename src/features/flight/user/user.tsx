@@ -16,28 +16,28 @@ import {
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useState } from 'react';
 import { getAllUserList } from '~/apis/system';
-import { fetChangeEnableBankList } from '~/apis/tools';
 import { IconChevronDown } from '~/assets';
 import { some } from '~/utils/constants/constant';
 import { listGender } from '~/utils/constants/dataOptions';
-const AccountListDA: React.FunctionComponent = () => {
-  const [listBankRef, setListBankPaymentRef] = useState<some[]>([]);
+
+const UserList: React.FunctionComponent = () => {
+  const [listUser, setUserList] = useState<some[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [modal, setModal] = useState<some>({
     open: false,
     item: null,
   });
 
-  const changeEnableBankList = async (params: some) => {
+  const deleteUser = async (params: some) => {
     setLoading(true);
     try {
-      const { data } = await fetChangeEnableBankList(params);
-      if (data.code === 200) {
-        message.success(data.message);
-        getUserList();
-      } else {
-        message.error(data.message);
-      }
+      //   const { data } = await deleteUser(params);
+      //   if (data.code === 200) {
+      //     message.success(data.message);
+      //     getUserList();
+      //   } else {
+      //     message.error(data.message);
+      //   }
       setLoading(false);
     } catch (error) {}
   };
@@ -49,7 +49,7 @@ const AccountListDA: React.FunctionComponent = () => {
       console.log(data);
 
       if (data?.message === 200) {
-        setListBankPaymentRef(data.data);
+        setUserList(data.data);
       } else {
         message.error(data.message);
       }
@@ -64,7 +64,7 @@ const AccountListDA: React.FunctionComponent = () => {
       okText: 'Xác nhận',
       cancelText: 'Hủy',
       onOk() {
-        changeEnableBankList({ id: record.bankID });
+        deleteUser({ id: record.id });
       },
     });
   };
@@ -178,7 +178,7 @@ const AccountListDA: React.FunctionComponent = () => {
       <Table
         rowKey={(record) => record.id}
         columns={columns}
-        dataSource={listBankRef}
+        dataSource={listUser}
         loading={loading}
         pagination={false}
       />
@@ -186,7 +186,7 @@ const AccountListDA: React.FunctionComponent = () => {
     </div>
   );
 };
-export default AccountListDA;
+export default UserList;
 
 const BookingNotesDrawer = (props: any) => {
   const { modal, setModal } = props;

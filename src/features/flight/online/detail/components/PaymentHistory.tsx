@@ -8,7 +8,6 @@ import { some, listImg } from '~/utils/constants/constant';
 import { useAppSelector } from '~/utils/hook/redux';
 import { formatMoney, getPaymentHistoryStatus } from '~/utils/helpers/helpers';
 import { IconRefreshGrayrice } from '~/assets';
-import { purchaseTypes } from '~/features/flight/offline/constant';
 
 interface DataType {
   id: number;
@@ -58,10 +57,8 @@ const columns: ColumnsType<DataType> = [
   {
     title: 'Loại thanh toán',
     dataIndex: 'purchaseType',
-    render: (text) => {
-      return (
-        <div>{purchaseTypes.find((el: some) => el.value == text)?.name || 'Không xác định'}</div>
-      );
+    render: () => {
+      return <div>Không xác định</div>;
     },
   },
   {

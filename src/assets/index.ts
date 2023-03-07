@@ -104,7 +104,6 @@ export { ReactComponent as IconCloseNoneCycleSmall } from '~/assets/icons/icon_c
 export { ReactComponent as IconCallDark } from '~/assets/icons/icon_call_dark.svg';
 export { ReactComponent as IconCloseDark } from '~/assets/icons/icon_close_dark.svg';
 export { ReactComponent as IconHoldTicket } from '~/assets/icons/icon_hold_ticket.svg';
-export { ReactComponent as IconRejectOffline } from '~/assets/icons/icon_reject_offline.svg';
 export { ReactComponent as IconEditNote } from '~/assets/icons/icon_edit_note.svg';
 export { ReactComponent as IconUploadExcel } from '~/assets/icons/icon_upload.svg';
 export { ReactComponent as IconDownLoad } from '~/assets/icons/icon_download.svg';

@@ -2,10 +2,10 @@ import { Col, Row } from 'antd';
 import { FormattedMessage } from 'react-intl';
 
 import { LogoLogin } from '~/assets';
-import LoginViaGG from '~/features/login/components/LoginViaGG';
 
 import '~/features/login/login.scss';
 import { listImg } from '~/utils/constants/constant';
+import LoginForm from './component/LoginForm';
 
 const Login = () => {
   return (
@@ -15,9 +15,9 @@ const Login = () => {
           <div className='via-login-content'>
             <img src={LogoLogin} alt='anh logo login' />
             <span className='title-login'>
-              <FormattedMessage id='IDS_TEXT_WELCOME_BACK'/>
+              <FormattedMessage id='IDS_TEXT_WELCOME_BACK' />
             </span>
-            <LoginViaGG />
+            <LoginForm />
           </div>
         </Col>
         <Col span={12}>

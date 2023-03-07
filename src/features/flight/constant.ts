@@ -1,5 +1,3 @@
-export const MODAL_KEY_SMS = 'SMS';
-export const MODAL_KEY_EMAIL = 'EMAIL';
 export const MODAL_KEY_EDIT_BOOKER = 'EDIT_BOOKER';
 
 export const MODAL_KEY_MENU = {

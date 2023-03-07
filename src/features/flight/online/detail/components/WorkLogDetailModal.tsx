@@ -2,14 +2,13 @@ import { Col, Row } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import moment from 'moment';
 import * as React from 'react';
-import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/scss/image-gallery.scss';
-import { listFlightFormatName } from '~/features/flight/offline/constant';
 import '~/features/flight/online/detail/FlightDetail.scss';
 import { some } from '~/utils/constants/constant';
 import { listAgeCategory, listGender } from '~/utils/constants/dataOptions';
 import { DATE_TIME_FORMAT } from '~/utils/constants/moment';
 import { isEmpty } from '~/utils/helpers/helpers';
+import { listFlightFormatName } from './modalDetailFlight/UpdateBookingPnr';
 
 interface Props {
   type: string;

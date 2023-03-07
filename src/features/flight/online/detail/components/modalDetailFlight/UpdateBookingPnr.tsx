@@ -1,15 +1,4 @@
-import {
-  Alert,
-  Button,
-  Col,
-  Divider,
-  message,
-  Modal,
-  Radio,
-  RadioChangeEvent,
-  Row,
-  Spin,
-} from 'antd';
+import { Button, Col, Divider, message, Modal, Radio, RadioChangeEvent, Row, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
@@ -19,7 +8,6 @@ import {
 import Loading from '~/components/loading/Loading';
 import { MODAL_KEY_MENU } from '~/features/flight/constant';
 import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
-import { listFlightFormatName } from '~/features/flight/offline/constant';
 import { some } from '~/utils/constants/constant';
 import { listAgeCategory, listGender } from '~/utils/constants/dataOptions';
 import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
@@ -30,6 +18,64 @@ interface Props {
   data?: some[];
   type: string;
 }
+
+export const listFlightFormatName = {
+  lastName: 'Họ ',
+  firstName: 'Tên đệm và tên ',
+  gender: 'Giới tính ',
+  dobStr: 'Ngày sinh ',
+  dob: 'Ngày sinh ',
+  phone1: 'Số điện thoại ',
+  passport: 'Số hộ chiếu ',
+  passportExpiry: 'Ngày hết hạn hộ chiếu ',
+  outboundTicketNo: 'Số vé chiều đi ',
+  inboundTicketNo: 'Số vé chiều về ',
+  email: 'Email ',
+  departureTime: 'Thời gian khởi hành ',
+  arrivalTime: 'Thời gian tới nơi ',
+  fromAirport: 'Điểm đi ',
+  toAirport: 'Điểm đến ',
+  flightCode: 'Mã chuyến bay',
+  agencyId: 'Nhà cung cấp ',
+  airlineId: 'Hãng bay ',
+  creatingSaleId: 'Người tạo ',
+  finalPrice: 'Tiền thu khách ',
+  paymentMethodId: 'Phương thức thanh toán ',
+  paymentStatus: 'Trạng thái thanh toán ',
+  pnrCode: 'Mã đặt chỗ ',
+  processingTime: 'Ngày phát sinh ',
+  saleId: 'Người xử lý ',
+  signIn: 'SignIn ',
+  status: 'Trạng thái ',
+  totalNetPrice: 'Số tiền trả hãng ',
+  type: 'Loại phát sinh ',
+  note: 'Ghi chú ',
+  isOutbound: 'Chiều xử lý ',
+  GuestValidateResult: 'Thông tin hành khách',
+  TicketValidateResult: 'Thông tin hành trình',
+  BookingBaggageValidateResult: 'Thông tin hành lý',
+  classOfService: 'Hạng đặt chỗ',
+  ticketClass: 'Hạng vé',
+  totalWeight: 'Hành lý',
+  journeyIndex: 'Chiều bay',
+  legIndex: 'Chặng',
+  flightNumber: 'Số hiệu chuyến bay',
+  ageCategory: 'Tuổi ',
+  name: 'Hành khách ',
+  eticket: 'Số vé',
+  price: 'Tiền vé chênh',
+  fee: 'Phí',
+  marketingAirline: 'Hãng bán vé',
+  operatingAirline: 'Hãng vận hành',
+  airlineClassCode: 'Hạng vé',
+  numAdults: 'Số người lớn',
+  paymentInfo: 'Thông tin thanh toán',
+  guestNum: 'Số hành khách',
+  paymentMethodName: 'Phương thức thanh toán',
+  GuestValidator: 'Thông tin hành khách',
+  TicketValidator: 'Thông tin hành trình',
+  BookingBaggageValidator: 'Thông tin hành lý',
+};
 
 const UpdateBookingPnr: React.FC<Props> = (props) => {
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);

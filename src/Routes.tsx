@@ -1,9 +1,6 @@
-// lib
 import { Layout } from 'antd';
 import { FC, ReactNode, useEffect } from 'react';
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
-
-// func
 import {
   AirlinesType,
   AirportType,
@@ -25,27 +22,12 @@ import Login from '~/features/login/login';
 import { IS_COLLAPSIBLE, routes, some, TOKEN } from '~/utils/constants/constant';
 
 import '~/components/Layout/layout.scss';
-import Sample from '~/features/example/Sample';
 
 import FlightOnline from '~/features/flight/online/Flight';
 import FlightDetail from '~/features/flight/online/detail/FlightDetail';
-import FlightOffline from '~/features/flight/offline/FilghtOffline';
-import Reconciliation from '~/features/flight/reconciliation/Reconciliation';
-import ErrorDetailPage from '~/features/flight/reconciliation/ErrorDetailPage';
-import HotelOnline from '~/features/hotel/online/HotelOnline';
-import HotelOffline from '~/features/hotel/offline/HotelOffline';
-import HotelOnlineDetail from '~/features/hotel/online/detail/HotelOnlineDetail';
-import FlightApproval from './features/approval/flight/FlightApproval';
-import HotelApproval from './features/approval/hotel/HotelApproval';
-import TransferSupport from './features/payment_support/transfer/BankTransfer';
-import BankTransfer from './features/payment_support/transfer/BankTransfer';
-import PaymentSupportTools from './features/tools/payment_tools/PaymentSupportTools';
 import PageNotFound from './components/404Page/PageNotFound';
-import CreditHoldTransaction from './features/payment_support/credit_hold_transaction/CreditHoldTransaction';
-import BankAccountList from './features/tools/payment_tools/components/BankAccountList';
-import AccountListDA from './features/tools/payment_tools/components/AccountListDA';
-import Cookies from 'js-cookie';
 import FlightExtractor from './features/flight/extractor/FlightExtractor';
+import UserList from './features/flight/user/user';
 
 const { Content } = Layout;
 
@@ -118,7 +100,7 @@ const RoutesComponent: FC = () => {
               {/* FLIGHT AIRLINE */}
               <Route path={routes.FLIGHT_EXTRACTOR} element={<FlightExtractor />} />
               {/* FLIGHT USER */}
-              <Route path={routes.FLIGHT_USER} element={<AccountListDA />} />
+              <Route path={routes.FLIGHT_USER} element={<UserList />} />
             </Route>
           </Route>
         </Route>

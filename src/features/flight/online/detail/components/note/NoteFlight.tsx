@@ -11,7 +11,6 @@ import {
   getBookingWorkLogs,
   getFlightBookingNote,
 } from '~/apis/flight';
-import { uploadImagePublic } from '~/apis/system';
 import { IconImageUpload, IconRefesh, IconSend } from '~/assets';
 import DataEmpty from '~/components/dataEmpty/DataEmpty';
 import { SUCCESS_CODE } from '~/features/flight/constant';
@@ -173,36 +172,6 @@ const NoteFlight: React.FunctionComponent<INoteFlightProps> = (props) => {
     }
   };
 
-  const handleUploadFile = async (e: any) => {
-    const { files } = e.target;
-    if (files && files.length > 0) {
-      const maxUpload = files[0].size / 1024 / 1024 <= 5;
-      if (!files[0].name.match(/\.(jpg|jpeg|png)$/)) {
-        message.error(intl.formatMessage({ id: 'IDS_TEXT_FILE_FORMAT_NOT_CORRECT' }));
-        return null;
-      }
-      if (maxUpload) {
-        const formData = new FormData();
-        formData.append('file', files[0]);
-        try {
-          setUpfileLoading(true);
-          const dataUpload = await uploadImagePublic(formData);
-          if (dataUpload.data.code === SUCCESS_CODE) {
-            handleSaveImage(dataUpload.data.photo.link);
-            // message.success(dataUpload?.data?.message);
-          } else {
-            message.error(dataUpload?.data?.message);
-          }
-        } catch (error) {
-        } finally {
-          setUpfileLoading(false);
-        }
-      } else {
-        message.error(intl.formatMessage({ id: 'IDS_TEXT_MAX_SIZE_IMG_5M' }));
-      }
-    }
-  };
-
   React.useEffect(() => {
     fetNoteList();
     fetNoteImages();
@@ -220,12 +189,6 @@ const NoteFlight: React.FunctionComponent<INoteFlightProps> = (props) => {
             icon={<IconImageUpload className='fl-note-icon' />}
           />
         </Tooltip>
-        <input
-          type='file'
-          style={{ display: 'none' }}
-          id='upload_note_file'
-          onChange={handleUploadFile}
-        />
         <Input
           value={noteContent || ''}
           placeholder={intl.formatMessage({ id: 'IDS_TEXT_NOTE_ENTER' })}

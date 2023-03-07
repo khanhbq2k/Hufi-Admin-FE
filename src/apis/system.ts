@@ -1,26 +1,11 @@
-import { message } from 'antd';
 import api from '~/utils/helpers/api';
-import { CRM_SERVICE, FLYX_SERVICE, ACCOUNT_SERVICE } from './../utils/constants/constant';
 
-export const loginAccountViaFbGg = (data = {}, headers = {}) => {
+export const login = (data = {}, headers = {}) => {
   const option = {
     method: 'post',
-    url: '/helpDesk/auth/loginOauth',
+    url: '/auth/login',
     data,
-    noAuthentication: true,
-    serVice: CRM_SERVICE,
     headers,
-  };
-  return api(option);
-};
-
-// api up ảnh
-export const uploadImagePublic = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/photos/upload',
-    data,
-    serVice: CRM_SERVICE,
   };
   return api(option);
 };
@@ -33,20 +18,10 @@ export const getUserInfo = () => {
   return api(option);
 };
 
-export const getAvailableAgents = () => {
-  const option = {
-    method: 'get',
-    url: '/helpDesk/getAvailableAgents',
-    serVice: CRM_SERVICE,
-  };
-  return api(option);
-};
-
-export const logoutAuth = () => {
+export const logout = () => {
   const option = {
     method: 'delete',
-    url: '/helpDesk/auth/logout',
-    serVice: CRM_SERVICE,
+    url: '/auth/logout',
   };
   return api(option);
 };
@@ -72,7 +47,6 @@ export const getAllCountries = () => {
   const option = {
     method: 'get',
     url: '/getAllCountries',
-    serVice: ACCOUNT_SERVICE,
   };
   return api(option);
 };

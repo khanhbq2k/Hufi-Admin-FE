@@ -5,7 +5,6 @@ import {
   getFlightBookingPostProcessing,
   getFlightBookings,
   getFlightBookingsDetailNew,
-  getFlightBookingsOffline,
   getGeneralInfo,
 } from '~/apis/flight';
 import { DEFAULT_PAGING } from '~/features/flight/constant';
@@ -26,9 +25,6 @@ export interface SystemState {
   pagingOnline: PagingOnline;
   filterOnline: some;
   flightOnlineDetail: some;
-  bookingsOffline: BookingsOnlineType[];
-  pagingOffline: PagingOnline;
-  filterOffline: some;
   total: number;
   salesList: some[];
   generalInfo: some;
@@ -42,12 +38,6 @@ const initialState: SystemState = {
   totalBookingsOnline: 0,
   filterOnline: {},
   pagingOnline: {
-    page: 0,
-    size: 10,
-  },
-  bookingsOffline: [],
-  filterOffline: {},
-  pagingOffline: {
     page: 0,
     size: 10,
   },
@@ -118,42 +108,6 @@ export const fetFlightBookingsDetail1 = createAsyncThunk(
   },
 );
 
-export const fetFlightBookingOffline = createAsyncThunk(
-  'system/fetFlightBookingOffline',
-  async (query: some = {}) => {
-    try {
-      const { formData = {}, isFilter = true, paging = DEFAULT_PAGING } = query;
-      const { data } = await getFlightBookingsOffline({
-        ...formData,
-        page: paging.page,
-        pageSize: paging.pageSize,
-        createdFrom: formData?.createdFrom
-          ? moment(formData?.createdFrom, DATE_FORMAT_BACK_END).toDate()
-          : undefined,
-        createdTo: formData?.createdTo
-          ? moment(formData?.createdTo, DATE_FORMAT_BACK_END).toDate()
-          : undefined,
-      });
-      if (data.code === 200) {
-        return await {
-          bookings: data.data,
-          pagingOffline: isFilter
-            ? {
-                page: 0,
-                pageSize: 10,
-              }
-            : paging,
-          filterOffline: formData,
-          total: data.recordsTotal,
-        };
-      }
-      return [];
-    } catch (error) {
-      console.log(error);
-    }
-  },
-);
-
 export const fetGeneralInfo = createAsyncThunk(
   'system/fetGeneralInfo',
   async (query: some = {}) => {
@@ -213,16 +167,6 @@ export const flightSlice = createSlice({
     builder.addCase(fetFlightBookingsDetail.fulfilled, (state, action: PayloadAction<any>) => {
       state.isLoading = false;
       state.flightOnlineDetail = action.payload;
-    });
-    builder.addCase(fetFlightBookingOffline.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(fetFlightBookingOffline.fulfilled, (state, action: PayloadAction<any>) => {
-      state.isLoading = false;
-      state.bookingsOffline = action.payload.bookings || [];
-      state.pagingOffline = action.payload.pagingOffline;
-      state.filterOffline = action.payload.filterOffline;
-      state.total = action.payload.total;
     });
     builder.addCase(fetGeneralInfo.fulfilled, (state, action: PayloadAction<any>) => {
       state.generalInfo = action.payload;

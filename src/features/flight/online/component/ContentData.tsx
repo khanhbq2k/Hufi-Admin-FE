@@ -1,20 +1,13 @@
-import { DownOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Col, Dropdown, Menu, Row, Select, Space, Table, Tag } from 'antd';
+import { Col, Row, Space, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
-import { useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { IconRefreshGrayrice } from '~/assets';
 import PaginationTable from '~/components/pagination/PaginationTable';
-import SmsEmailModal from '~/features/flight/components/modal/SmsEmailModal';
-import { MODAL_KEY_EMAIL, MODAL_KEY_SMS } from '~/features/flight/constant';
 import { fetFlightBookings } from '~/features/flight/flightSlice';
 import InOutBound from '~/features/flight/online/component/InOutBound';
-import LastSale from '~/features/flight/online/component/LastSale';
 import '~/features/flight/online/FlightOnline.scss';
 import { BookingsOnlineType, PagingOnline } from '~/features/flight/online/Modal';
-import UnholdCreditModal from '~/features/payment_support/credit_hold_transaction/components/UnholdCreditModal';
-import { AirlinesType, AirportType } from '~/features/systems/systemSlice';
 import { some } from '~/utils/constants/constant';
 import { DATE_TIME_FORMAT } from '~/utils/constants/moment';
 
@@ -25,7 +18,6 @@ import {
   removeFieldEmptyFilter,
 } from '~/utils/helpers/helpers';
 import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
-import HoldingLimitationModal from '../../components/modal/spTools/HoldingLimitationModal';
 
 const ContentData = () => {
   const navigate = useNavigate();
@@ -184,8 +176,6 @@ const ContentData = () => {
             totalElements={totalBookingsOnline}
           />
         )}
-      {/* <SmsEmailModal modal={modal} setModal={setModal} /> */}
-      {/* <HoldingLimitationModal modal={modal} setModal={setModal} /> */}
     </>
   );
 };

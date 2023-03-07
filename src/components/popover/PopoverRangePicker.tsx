@@ -7,7 +7,6 @@ import { isEmpty } from '~/utils/helpers/helpers';
 import { IconCloseNoneCycleSmall, IconCloseNoneCycleWhite } from '~/assets';
 import Calendar from '../calendar/Calendar';
 import moment, { Moment } from 'moment';
-import { listFilterAddFlight } from '~/utils/constants/dataOptions';
 import { PopoverRangePickerProps } from '~/components/popover/Modal';
 
 const PopoverRangePicker: FC<PopoverRangePickerProps> = ({

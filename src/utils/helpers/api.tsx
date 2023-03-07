@@ -32,13 +32,12 @@ request.interceptors.response.use(
 );
 
 const api = (options: any = {}) => {
-  // if (!isEmpty(cookie.get(constants.TOKEN))) {
-  options.headers = {
-    ...options.headers,
-    // ['login_token']: `${cookie.get(constants.TOKEN)}`,
-    login_token: 'admin123',
-  };
-  // }
+  if (!isEmpty(cookie.get(constants.TOKEN))) {
+    options.headers = {
+      ...options.headers,
+      ['login_token']: `${cookie.get(constants.TOKEN)}`,
+    };
+  }
   return request({
     baseURL: 'http://localhost:8090/hufi',
     ...options,
