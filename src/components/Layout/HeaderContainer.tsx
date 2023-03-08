@@ -1,13 +1,7 @@
 import { Avatar, Button, Layout, Popover } from 'antd';
 import cookie from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import {
-  IconCamera,
-  IconEmail,
-  IconLogout,
-  IconNotiHeader,
-  IconVNTravelLogo,
-} from '~/assets/index';
+import { IconCamera, IconEmail, IconLogout, IconNotiHeader, IconHufiLogo } from '~/assets/index';
 import { routes, TOKEN } from '~/utils/constants/constant';
 
 import { setUserInfo } from '~/features/systems/systemSlice';
@@ -53,15 +47,7 @@ const HeaderContainer = () => {
         </Avatar>
         <span className='name-user'>{userInfo?.userInfo?.name}</span>
         <span className='email-user'>{userInfo?.email}</span>
-        <Button
-          disabled
-          onClick={() => {
-            document?.getElementById('upload_file')?.click();
-          }}
-          type='text'
-          className='icon-camera'
-          icon={<IconCamera />}
-        ></Button>
+        <Button disabled type='text' className='icon-camera' icon={<IconCamera />}></Button>
       </div>
       <div className='item-menu-user' onClick={handleLogout}>
         <IconLogout />
@@ -72,8 +58,8 @@ const HeaderContainer = () => {
 
   return (
     <Header className='header-container'>
-      <div className='badge-header'>
-        <IconVNTravelLogo />
+      <div className='badge-header' style={{ width: 110, marginLeft: 8 }}>
+        <IconHufiLogo />
       </div>
       <div className='badge-header'>
         <IconNotiHeader />

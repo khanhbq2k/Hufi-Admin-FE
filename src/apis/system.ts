@@ -1,3 +1,4 @@
+import { some } from './../utils/constants/constant';
 import api from '~/utils/helpers/api';
 
 export const login = (data = {}, headers = {}) => {
@@ -51,25 +52,44 @@ export const getAllCountries = () => {
   return api(option);
 };
 
-export const getAllUserList = () => {
-  let listUser: any[] = [];
-  [...Array(50)].forEach((el: any, idx: number) => {
-    listUser.push({
-      id: idx + 1,
-      channelId: idx + 2,
-      gender: 'M',
-      firstName: 'Khanh',
-      lastName: 'Bui',
-      fullName: 'Bui Khanh',
-      email: 'test@gmail.com',
-      phone: '0985284827',
-      avatar: `https://picsum.photos/id/${idx + 1}/50/50 `,
-      active: idx % 3 ? true : false,
-    });
-  });
-
-  return {
-    data: listUser,
-    message: 200,
+export const getAllUsers = () => {
+  const option = {
+    method: 'get',
+    url: '/crm/user',
   };
+  return api(option);
+};
+
+export const createUser = (data: some = {}) => {
+  const option = {
+    method: 'post',
+    url: '/crm/user',
+    data: data,
+  };
+  return api(option);
+};
+
+export const blockUser = (userId: number) => {
+  const option = {
+    method: 'post',
+    url: '/crm/user/' + userId + '/block',
+  };
+  return api(option);
+};
+
+export const unblockUser = (userId: number) => {
+  const option = {
+    method: 'post',
+    url: '/crm/user/' + userId + '/unblock',
+  };
+  return api(option);
+};
+
+export const updateUserInfo = (data: some = {}) => {
+  const option = {
+    method: 'put',
+    url: '/crm/user',
+    data: data,
+  };
+  return api(option);
 };

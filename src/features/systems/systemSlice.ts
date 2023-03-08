@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { getAirlines, getAllCountries, getUserInfo, getAirports } from '~/apis/system';
-import { IS_COLLAPSIBLE, IS_OPTIMIZE, some } from '~/utils/constants/constant';
+import { IS_COLLAPSIBLE, some } from '~/utils/constants/constant';
 
 export interface AllowAgentType {
   code: string;
@@ -29,7 +29,6 @@ export interface SystemState {
   airlines: AirlinesType[];
   airports: AirportType[];
   countries: some[];
-  isOptimize: boolean;
 }
 
 const initialState: SystemState = {
@@ -37,7 +36,6 @@ const initialState: SystemState = {
   isLoading: false,
   userInfo: {},
   collapsible: localStorage.getItem(IS_COLLAPSIBLE) === 'true',
-  isOptimize: localStorage.getItem(IS_OPTIMIZE) === 'false',
   allowAgents: [],
   airlines: [],
   airports: [],
@@ -89,9 +87,6 @@ export const systemSlice = createSlice({
     visiblecollaps: (state, action: PayloadAction<boolean>) => {
       state.collapsible = action.payload;
     },
-    visibleOptimize: (state, action: PayloadAction<boolean>) => {
-      state.isOptimize = action.payload;
-    },
   },
   extraReducers(builder) {
     builder.addCase(fetUserInfoAsync.pending, (state) => {
@@ -120,6 +115,6 @@ export const systemSlice = createSlice({
   },
 });
 
-export const { visibleLoading, setUserInfo, visiblecollaps, visibleOptimize } = systemSlice.actions;
+export const { visibleLoading, setUserInfo, visiblecollaps } = systemSlice.actions;
 
 export default systemSlice.reducer;

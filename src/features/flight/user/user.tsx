@@ -15,41 +15,30 @@ import {
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useState } from 'react';
-import { getAllUserList } from '~/apis/system';
+import { getAllUsers, createUser, updateUserInfo, blockUser, unblockUser } from '~/apis/system';
 import { IconChevronDown } from '~/assets';
 import { some } from '~/utils/constants/constant';
 import { listGender } from '~/utils/constants/dataOptions';
 
 const UserList: React.FunctionComponent = () => {
-  const [listUser, setUserList] = useState<some[]>([]);
+  const [listUser, setListUser] = useState<some[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [modal, setModal] = useState<some>({
+  const [createModal, setCreateModel] = useState<some>({
+    open: false,
+    item: null,
+  });
+  const [editModel, setEditModel] = useState<some>({
     open: false,
     item: null,
   });
 
-  const deleteUser = async (params: some) => {
+  const handleBlockUser = async (userId: number) => {
     setLoading(true);
     try {
-      //   const { data } = await deleteUser(params);
-      //   if (data.code === 200) {
-      //     message.success(data.message);
-      //     getUserList();
-      //   } else {
-      //     message.error(data.message);
-      //   }
-      setLoading(false);
-    } catch (error) {}
-  };
-
-  const getUserList = async () => {
-    setLoading(true);
-    try {
-      const data = getAllUserList();
-      console.log(data);
-
-      if (data?.message === 200) {
-        setUserList(data.data);
+      const { data } = await blockUser(userId);
+      if (data.code === 200) {
+        message.success(data.message);
+        getUserList();
       } else {
         message.error(data.message);
       }
@@ -57,14 +46,45 @@ const UserList: React.FunctionComponent = () => {
     } catch (error) {}
   };
 
-  const confirmModal = (record: some) => {
+  const handleUnblockUser = async (userId: number) => {
+    setLoading(true);
+    try {
+      const { data } = await unblockUser(userId);
+      if (data.code === 200) {
+        message.success(data.message);
+        getUserList();
+      } else {
+        message.error(data.message);
+      }
+      setLoading(false);
+    } catch (error) {}
+  };
+
+  const getUserList = async () => {
+    setLoading(true);
+    try {
+      const { data } = await getAllUsers();
+      if (data?.code === 200) {
+        setListUser(data?.data?.items);
+      } else {
+        message.error(data.message);
+      }
+      setLoading(false);
+    } catch (error) {}
+  };
+
+  const confirmBlockUserModal = (record: some) => {
     Modal.confirm({
-      title: `Bạn có muốn xóa user ${record.firstName}`,
+      title: `Bạn có muốn ${!record.active ? 'bỏ ' : ''}chặn user ${record.fullName}`,
       content: 'Vui lòng xác nhận kỹ thông tin trước khi thao tác!',
       okText: 'Xác nhận',
       cancelText: 'Hủy',
       onOk() {
-        deleteUser({ id: record.id });
+        if (record.active) {
+          handleBlockUser(record.id);
+        } else {
+          handleUnblockUser(record.id);
+        }
       },
     });
   };
@@ -76,23 +96,16 @@ const UserList: React.FunctionComponent = () => {
       key: 'id',
     },
     {
-      title: 'Avatar',
-      dataIndex: 'avatar',
-      key: 'avatar',
-      render: (text) => {
-        return (
-          <div>
-            <Image style={{ borderRadius: '50%' }} width={30} src={text} />
-          </div>
-        );
-      },
+      title: 'Họ và Tên',
+      dataIndex: 'fullName',
+      key: 'fullName',
     },
     {
-      title: 'Tên',
-      dataIndex: 'firstName',
-      key: 'firstName',
-      render: (text, record) => {
-        return <div>{`${text} ${record.fullName}`}</div>;
+      title: 'Giới tính',
+      dataIndex: 'gender',
+      key: 'gender',
+      render: (text) => {
+        return <div>{listGender.find((g) => g.code === text)?.name}</div>;
       },
     },
     {
@@ -115,7 +128,7 @@ const UserList: React.FunctionComponent = () => {
       title: 'Trạng thái',
       dataIndex: 'active',
       key: 'active',
-      render: (text, record) => {
+      render: (text) => {
         return (
           <span>
             {<Tag color={text ? 'success' : 'error'}>{text ? 'Hoạt động' : 'Không hoạt động'}</Tag>}
@@ -133,7 +146,7 @@ const UserList: React.FunctionComponent = () => {
             <Button
               type='primary'
               onClick={() => {
-                setModal({
+                setEditModel({
                   open: true,
                   item: record,
                 });
@@ -141,14 +154,14 @@ const UserList: React.FunctionComponent = () => {
             >
               Sửa
             </Button>
-            <Button
-              onClick={() => {
-                confirmModal(record);
+            <h4 style={{ display: 'flex', alignItems: 'center', padding: 8, margin: 0 }}>Chặn</h4>
+            <Switch
+              onChange={(value, e) => {
+                e.stopPropagation();
+                confirmBlockUserModal(record);
               }}
-              type='ghost'
-            >
-              Xóa
-            </Button>
+              checked={text}
+            />
           </Space>
         );
       },
@@ -166,7 +179,7 @@ const UserList: React.FunctionComponent = () => {
         <Button
           type='primary'
           onClick={() => {
-            setModal({
+            setCreateModel({
               item: {},
               open: true,
             });
@@ -182,22 +195,31 @@ const UserList: React.FunctionComponent = () => {
         loading={loading}
         pagination={false}
       />
-      <BookingNotesDrawer modal={modal} setModal={setModal} />
+      <CreateUserDrawer modal={createModal} setModal={setCreateModel} />
+      <EditUserDrawer modal={editModel} setModal={setEditModel} />
     </div>
   );
 };
 export default UserList;
 
-const BookingNotesDrawer = (props: any) => {
+const CreateUserDrawer = (props: any) => {
   const { modal, setModal } = props;
   const { item } = modal;
   const [form] = Form.useForm();
 
   const onFinish = async (value: some) => {
-    console.log(value);
     try {
-      const data = getAllUserList();
-      if (data?.message === 200) {
+      const dataDTO = {
+        firstName: value.firstName,
+        lastName: value.lastName,
+        password: value.password,
+        gender: value.gender,
+        email: value.email,
+        phone: value.phone,
+        active: value.active,
+      };
+      const { data } = await createUser(dataDTO);
+      if (data?.code === 200) {
         handleClose();
       } else {
         message.error(data.message);
@@ -217,7 +239,7 @@ const BookingNotesDrawer = (props: any) => {
 
   return (
     <Drawer
-      title='Sửa người dùng'
+      title='Thêm người dùng'
       placement='right'
       onClose={() => {
         handleClose();
@@ -234,7 +256,7 @@ const BookingNotesDrawer = (props: any) => {
           <Form.Item name='firstName' label='Họ'>
             <Input />
           </Form.Item>
-          <Form.Item name='fullName' label='Tên'>
+          <Form.Item name='lastName' label='Tên'>
             <Input />
           </Form.Item>
           <Form.Item name='gender' label='Giới tính'>
@@ -246,14 +268,111 @@ const BookingNotesDrawer = (props: any) => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name='email' label='Email'>
+          <Form.Item
+            name='email'
+            label='Email'
+            rules={[{ required: true, message: 'Vui lòng nhập địa chỉ email!' }]}
+          >
             <Input />
+          </Form.Item>
+          <Form.Item
+            name='password'
+            label='Password'
+            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+          >
+            <Input.Password />
           </Form.Item>
           <Form.Item name='phone' label='Số điện thoại'>
             <Input />
           </Form.Item>
           <Form.Item name='active' label='Trạng thái' valuePropName='checked'>
-            <Switch />
+            <Switch defaultChecked />
+          </Form.Item>
+          <Form.Item>
+            <Button htmlType='submit' type='primary' className='send-note'>
+              Xác nhận
+            </Button>
+          </Form.Item>
+        </Form>
+      </>
+    </Drawer>
+  );
+};
+
+const EditUserDrawer = (props: any) => {
+  const { modal, setModal } = props;
+  const { item } = modal;
+  const [form] = Form.useForm();
+
+  const onFinish = async (value: some) => {
+    try {
+      const dataDTO = {
+        userId: modal.item.id,
+        firstName: value.firstName,
+        lastName: value.lastName,
+        password: value.password,
+        gender: value.gender,
+        email: value.email,
+        phone: value.phone,
+      };
+      const { data } = await updateUserInfo(dataDTO);
+      if (data?.code === 200) {
+        handleClose();
+      } else {
+        message.error(data.message);
+      }
+    } catch (error) {}
+  };
+
+  const handleClose = () => {
+    setModal({
+      item: null,
+      open: false,
+    });
+  };
+  useEffect(() => {
+    form.resetFields();
+  }, [modal]);
+
+  return (
+    <Drawer
+      title='Sửa thông tin người dùng'
+      placement='right'
+      onClose={() => {
+        handleClose();
+      }}
+      visible={modal.open}
+      width={400}
+      className='drawer-arise-detail'
+    >
+      <>
+        <Form form={form} initialValues={item} onFinish={onFinish} layout='vertical'>
+          <Form.Item name='id' hidden>
+            <Input />
+          </Form.Item>
+          <Form.Item name='lastName' label='Họ'>
+            <Input />
+          </Form.Item>
+          <Form.Item name='firstName' label='Tên'>
+            <Input />
+          </Form.Item>
+          <Form.Item name='gender' label='Giới tính' initialValue={modal.gender}>
+            <Select placeholder='Chọn' suffixIcon={<IconChevronDown />} optionFilterProp='children'>
+              {listGender.map((el: some) => (
+                <Select.Option key={el.code} value={el.code}>
+                  {el.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name='email' label='Email'>
+            <Input />
+          </Form.Item>
+          <Form.Item name='password' label='Password'>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item name='phone' label='Số điện thoại'>
+            <Input />
           </Form.Item>
           <Form.Item>
             <Button htmlType='submit' type='primary' className='send-note'>

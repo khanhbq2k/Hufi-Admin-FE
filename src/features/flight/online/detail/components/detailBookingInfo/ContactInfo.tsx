@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { IconCallDark, IconCloseOutline, IconEdit, IconEmail, IconInfomation } from '~/assets';
 import { MODAL_CONTACT_INFO } from '~/features/flight/constant';
 import EditBooker from '~/features/flight/online/detail/components/modalDetailFlight/EditBooker';
-import ListTransfers from '~/features/flight/online/detail/components/modalDetailFlight/ListTransfers';
 import { some } from '~/utils/constants/constant';
 import { DATE_TIME_FORMAT } from '~/utils/constants/moment';
 import {
@@ -13,25 +12,15 @@ import {
   getPaymentStatusFlight,
   getStatusFlight,
   isEmpty,
-  isSameAirline/*  */,
+  isSameAirline /*  */,
 } from '~/utils/helpers/helpers';
 import { useAppSelector } from '~/utils/hook/redux';
-import InfoGuestsModalNew from './InfoGuestsModalNew';
 import ModalUpdateFlightPNRCode from './modal/ModalUpdateFlightPNRCode';
 
 const getModalContactInfo = (dataModal: some) => {
   switch (dataModal?.key) {
     case MODAL_CONTACT_INFO.EDIT_BOOKER:
       return <EditBooker handleClose={dataModal?.handleCloseModal} booking={dataModal?.booking} />;
-
-    case MODAL_CONTACT_INFO.LIST_TRANSFERS:
-      return (
-        <ListTransfers
-          handleClose={dataModal?.handleCloseModal}
-          bankTransferRequest={dataModal?.booking?.bankTransferRequestInfo}
-        />
-      );
-
     default:
       break;
   }
@@ -48,25 +37,6 @@ const ContactInfo = () => {
   });
   const [visibleModal, setVisibleModal] = useState(false);
 
-  const bookerInfo = [
-    {
-      name: 'ID',
-      value: booking?.user?.id,
-    },
-    {
-      name: 'Tên',
-      value: booking?.user?.fullName,
-    },
-    {
-      name: 'Email',
-      value: booking?.user?.email,
-      class: 'text-blue',
-    },
-    {
-      name: 'Số điện thoại',
-      value: booking?.user?.phone,
-    },
-  ];
   const paymentData = [
     {
       name: 'Trạng thái đơn hàng',
@@ -192,13 +162,6 @@ const ContactInfo = () => {
         );
       },
     },
-    {
-      name: 'Tổng tiền chuyển khoản',
-      value: () => {
-        return <span>{formatMoney(booking?.bankTransferRequestInfo?.transferredAmount)}</span>;
-      },
-      hide: !booking?.bankTransferRequestInfo?.transferredAmount,
-    },
   ];
   const paymentStatus = getPaymentStatusFlight(booking?.payment?.paymentStatus);
   const bookStatus = getBookStatusFlight(booking?.booking.bookingStatus);
@@ -237,7 +200,7 @@ const ContactInfo = () => {
           <div className='main-contact-info'>
             <span className='text-bold'>Người liên hệ:</span>
             <span>{`${booking?.contact?.name} `}</span>
-            <IconEdit
+            {/* <IconEdit
               onClick={() => {
                 setModal({
                   open: true,
@@ -246,7 +209,7 @@ const ContactInfo = () => {
                 });
               }}
               style={{ cursor: 'pointer' }}
-            />
+            /> */}
           </div>
           <div className='main-contact-info' style={{ gap: 8, padding: 8 }}>
             <div className='gap-4-center'>
@@ -289,22 +252,21 @@ const ContactInfo = () => {
         modal={updateFlightPNRCode}
         setModal={setUpdateFlightPNRCode}
       />
-      <Modal
+      {/* <Modal
         className='wrapper-modal'
         title={<div className='title-modal'>{modal?.title}</div>}
         visible={modal?.open}
         footer={false}
         closeIcon={<IconCloseOutline />}
         onCancel={handleCloseModal}
-        width={modal?.type === MODAL_CONTACT_INFO.LIST_TRANSFERS ? 796 : undefined}
+        width={undefined}
       >
         {getModalContactInfo({
           key: modal?.type,
           handleCloseModal,
           booking,
         })}
-      </Modal>
-      <InfoGuestsModalNew visibleModal={visibleModal} setVisibleModal={setVisibleModal} />
+      </Modal> */}
     </div>
   );
 };

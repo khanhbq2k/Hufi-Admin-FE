@@ -16,7 +16,6 @@
   "IDS_TEXT_MARKETING_BREAKING_NEWS": "Breaking news",
   "IDS_TEXT_MARKETING_PROMOTION_CODE": "Promotion code",
   "IDS_TEXT_OTHER_SALE_MANAGER": "Quản lý sale",
-  "IDS_TEXT_NAME_APP": "Tripi Help Desk",
   "IDS_TEXT_LOGOUT": "Đăng xuất",
   "IDS_TEXT_LIST_FLIGHT_ONLINE_TITLE": "Danh sách đặt vé máy bay online",
   "IDS_TEXT_LIST_AIRLINE": "Danh sách hãng bay",
@@ -89,10 +88,8 @@
   "IDS_TEXT_BOOKING_TOTAL_TITLE_TRANS": "Tìm thấy tất cả {value} giao dịch",
   "IDS_TEXT_STATUS": "Trạng thái",
   "IDS_TEXT_BANK": "Ngân hàng",
-
   "IDS_TEXT_ACCEPT": "Xác nhận",
   "IDS_TEXT_CANCEL": "Bỏ qua",
-
   "IDS_TEXT_FLIGHT_OFFLINE_DELETE_BOOKING_NOTE": "Bạn có chắc chắn muốn xóa đơn hàng này khỏi danh sách?",
   "IDS_TEXT_FLIGHT_OFFLINE_DELETE_BOOKING_TITLE": "Xóa đơn hàng",
   "IDS_TEXT_DELETE_BOOKING_SUCCESS": "Xóa đơn hàng thành công",
@@ -101,7 +98,6 @@
   "IDS_TEXT_SUCCESS": "Thành công",
   "IDS_TEXT_FLIGHT_OFFLINE_APPROVE_BOOKING_NOTE": "Bạn có chắc chắn muốn xác nhận đơn hàng này?",
   "IDS_TEXT_FLIGHT_OFFLINE_APPROVE_BOOKING_TITLE": "Xác nhận đơn hàng",
-
   "IDS_TEXT_NOTE_ENTER": "Nhập ghi chú",
   "IDS_TEXT_NOTE_HISTORY": "Lịch sử ghi chú",
   "IDS_TEXT_IMAGE": "Ảnh",
@@ -128,10 +124,8 @@
   "IDS_TEXT_STATUS_PROCESS_HOTEL": "Trạng thái xử lý",
   "IDS_TEXT_STATUS_ORDER_HOTEL": "Trạng thái đơn hàng",
   "IDS_TEXT_FILTER_ORTHER_HOTEL": "Tiêu chí khác",
-
   "IDS_TEXT_MANIPULATION": "Thao tác",
   "IDS_TEXT_HOTEL_ID": "ID khách sạn",
-
   "IDS_TEXT_APPROVAL": "Phê duyệt",
   "IDS_TEXT_PAYMENT_SUPPORT": "Hỗ trợ thanh toán",
   "IDS_TEXT_TRANSFER": "Chuyển khoản",
@@ -143,7 +137,6 @@
   "IDS_TEXT_PAYMENT_CREDIT_HOLD": "Danh sách hold tiền",
   "IDS_TEXT_FLIGHT_REFUND_STATUS_APPROVED": "Đã phê duyệt bởi {value}",
   "IDS_TEXT_FLIGHT_REFUND_STATUS_REJECTED": "Đã từ chối bởi {value}",
-
   "IDS_TEXT_HOTEL_CUSTOMER_PAYMENT": "Khách hàng",
   "IDS_TEXT_HOTEL_PAYMENT": "Khách sạn",
   "IDS_TEXT_HOTEL_AGENCY_PAYMENT": "Agency",

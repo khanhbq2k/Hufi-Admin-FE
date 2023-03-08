@@ -2,10 +2,10 @@ import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
 import { DATE_TIME } from '~/features/flight/constant';
-import { some, listImg } from '~/utils/constants/constant';
+import { some } from '~/utils/constants/constant';
 import { useAppSelector } from '~/utils/hook/redux';
 import { formatMoney, getPaymentHistoryStatus } from '~/utils/helpers/helpers';
-import { IconRefreshGrayrice } from '~/assets';
+import { EmptyFlightImg, IconRefreshGrayrice } from '~/assets';
 import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
 
 interface DataType {
@@ -30,7 +30,7 @@ const columns: ColumnsType<DataType> = [
     title: 'Thời gian giao dịch',
     dataIndex: 'transactionDate',
     render: (text) => {
-      return <div>{moment(text).format(DATE_TIME)}</div>;
+      return <div>{text && moment(text).format(DATE_TIME)}</div>;
     },
     fixed: 'left',
   },
@@ -85,7 +85,7 @@ const PaymentHistory = () => {
       {!booking?.transaction ? (
         <div className='invoice-flight'>
           <div className='empty-invoice'>
-            <img src={listImg.imgEmptyInvoiceFlight} alt='' className='img-empty' />
+            <img src={EmptyFlightImg} alt='' className='img-empty' />
             <span>Bạn chưa có lịch sử thanh toán nào</span>
           </div>
         </div>

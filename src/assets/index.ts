@@ -15,7 +15,7 @@ export { ReactComponent as IconCloseNoneCycleWhite } from '~/assets/icons/icon_c
 export { ReactComponent as IconArrow } from '~/assets/icons/icon_arrow.svg';
 export { ReactComponent as IconCaretUp } from '~/assets/icons/icon_caret_up.svg';
 export { ReactComponent as IconReset } from '~/assets/icons/icon_reset.svg';
-export { ReactComponent as IconVNTravelLogo } from '~/assets/icons/icon_VNTravel_logo.svg';
+export { ReactComponent as IconHufiLogo } from '~/assets/icons/logo_hufi.svg';
 export { ReactComponent as IconNotiHeader } from '~/assets/icons/icon_notification_header.svg';
 export { ReactComponent as IconEmail } from '~/assets/icons/icon_email.svg';
 export { ReactComponent as IconCamera } from '~/assets/icons/icon_camera.svg';
@@ -116,4 +116,6 @@ export { ReactComponent as IconRevenue } from '~/assets/icons/icon_revenue.svg';
 export { ReactComponent as IconRevenueDark } from '~/assets/icons/icon_revenue_dark.svg';
 export { ReactComponent as IconExpand } from '~/assets/icons/icon_expand.svg';
 
+export { default as EmptyFlightImg } from '~/assets/images/img_empty_flight.png';
+export { default as BannerLoginImg } from '~/assets/images/img_banner_login.png';
 export { default as LogoLogin } from '~/assets/images/logo_login.png';
