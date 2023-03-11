@@ -1,13 +1,22 @@
-import { Col, Row } from 'antd';
-import { isEmpty } from '~/utils/helpers/helpers';
+import { EyeFilled } from '@ant-design/icons';
+import { Button, Col, Divider, Row, Space, Tooltip } from 'antd';
+import { useState } from 'react';
+import { IconInfomation } from '~/assets';
+import { some } from '~/utils/constants/constant';
+import { formatMoney, isEmpty } from '~/utils/helpers/helpers';
 import { useAppSelector } from '~/utils/hook/redux';
+import InfoGuestsModal from './InfoGuestsModal';
 
 const Guests = () => {
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
+  const [visibleModal, setVisibleModal] = useState<boolean>(false);
 
   return (
     <div className='guests'>
-      <h3>Hành khách: </h3>
+      <Space align='center' onClick={() => setVisibleModal(true)}>
+        <h3>Hành khách:</h3>
+        <IconInfomation style={{ cursor: 'pointer' }} />
+      </Space>
       <Row className='contact-info-box'>
         <Col span={24}>
           <table className='guest-table'>
@@ -57,6 +66,7 @@ const Guests = () => {
           </table>
         </Col>
       </Row>
+      <InfoGuestsModal visibleModal={visibleModal} setVisibleModal={setVisibleModal} />
     </div>
   );
 };

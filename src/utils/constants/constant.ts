@@ -5,8 +5,6 @@ export const VERSION_HOTEL_SERVICE = '1.0';
 
 /// data save local storage ///
 export const DEVICE_ID = 'device-id';
-export const LAST_LINK_PREVIEW = 'last-link-preview';
-export const IS_COLLAPSIBLE = 'isCollapsible';
 
 export const TIME_OUT_QUERY_API_FLIGHT_SEARCH = 800;
 

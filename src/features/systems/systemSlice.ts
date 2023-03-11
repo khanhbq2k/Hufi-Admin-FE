@@ -1,7 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { getAirlines, getAllCountries, getUserInfo, getAirports } from '~/apis/system';
-import { IS_COLLAPSIBLE, some } from '~/utils/constants/constant';
+import {
+  getAirlines,
+  getAllCountries as getCountries,
+  getUserInfo,
+  getAirports,
+} from '~/apis/system';
+import { some } from '~/utils/constants/constant';
 
 export interface AllowAgentType {
   code: string;
@@ -24,8 +29,6 @@ export interface SystemState {
   locale: string;
   isLoading: boolean;
   userInfo: some;
-  collapsible: boolean;
-  allowAgents: AllowAgentType[];
   airlines: AirlinesType[];
   airports: AirportType[];
   countries: some[];
@@ -35,8 +38,6 @@ const initialState: SystemState = {
   locale: 'vi',
   isLoading: false,
   userInfo: {},
-  collapsible: localStorage.getItem(IS_COLLAPSIBLE) === 'true',
-  allowAgents: [],
   airlines: [],
   airports: [],
   countries: [],
@@ -65,10 +66,10 @@ export const fetAirports = createAsyncThunk('system/fetAirports', async () => {
   }
 });
 
-export const fetAllCountries = createAsyncThunk('system/fetAllCountries', async () => {
+export const fetCountries = createAsyncThunk('system/fetCountries', async () => {
   try {
-    const { data } = await getAllCountries();
-    return await data.data.countries;
+    const { data } = await getCountries();
+    return await data.data.items;
   } catch (error) {
     console.log(error);
   }
@@ -83,9 +84,6 @@ export const systemSlice = createSlice({
     },
     setUserInfo: (state, action: PayloadAction<object>) => {
       state.userInfo = action.payload;
-    },
-    visiblecollaps: (state, action: PayloadAction<boolean>) => {
-      state.collapsible = action.payload;
     },
   },
   extraReducers(builder) {
@@ -109,12 +107,12 @@ export const systemSlice = createSlice({
     builder.addCase(fetAirports.fulfilled, (state, action: PayloadAction<AirportType[]>) => {
       state.airports = action.payload;
     });
-    builder.addCase(fetAllCountries.fulfilled, (state, action: PayloadAction<some[]>) => {
+    builder.addCase(fetCountries.fulfilled, (state, action: PayloadAction<some[]>) => {
       state.countries = action.payload;
     });
   },
 });
 
-export const { visibleLoading, setUserInfo, visiblecollaps } = systemSlice.actions;
+export const { visibleLoading, setUserInfo } = systemSlice.actions;
 
 export default systemSlice.reducer;

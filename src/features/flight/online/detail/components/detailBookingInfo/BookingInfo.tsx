@@ -1,11 +1,10 @@
 import { Col, Row, Tooltip } from 'antd';
 import moment from 'moment';
 import 'moment/locale/vi';
-import { useState } from 'react';
 import { IconArrow } from '~/assets';
-import { FORMAT_DAYS, TYPE_TICKET_INFO } from '~/features/flight/constant';
-import FromUpdateCode from '~/features/flight/online/detail/components/detailBookingInfo/form/FromUpdateCode';
+import { FORMAT_DAYS } from '~/features/flight/constant';
 import { AirlinesType } from '~/features/systems/systemSlice';
+import { TICKET_CLASS_CODE } from '~/utils/constants/dataOptions';
 import {
   C_DATE_FORMAT,
   DATE_FORMAT_BACK_END,
@@ -15,7 +14,6 @@ import {
 import { useAppSelector } from '~/utils/hook/redux';
 import FormInboundCode from './form/FormInboundCode';
 import FormOutboundCode from './form/FormOutboundCode';
-import ModalUpdateFlightPNRCode from './modal/ModalUpdateFlightPNRCode';
 
 const getFormatDay = (date: string) => FORMAT_DAYS[new Date(date).getDay()];
 const getExtraTime = (arrivalDate: string, departureDate: string) => {
@@ -28,8 +26,6 @@ const getExtraTime = (arrivalDate: string, departureDate: string) => {
 const BookingInfo = () => {
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
   const airlines: AirlinesType[] = useAppSelector((state) => state.systemReducer.airlines);
-
-  const [updateFlightPNRCode, setUpdateFlightPNRCode] = useState<string>('');
 
   const getIcon = (airlineCode: string) => {
     const item = airlines.find((el) => el?.code === airlineCode);
@@ -58,7 +54,12 @@ const BookingInfo = () => {
                 <b style={{ minWidth: 50 }} className='text-blue'>
                   {booking?.tickets[0]?.flightCode}
                 </b>
-                <span className='text-airline-code'>{booking?.tickets[0]?.ticketClass}</span>
+                <span className='text-airline-code'>
+                  {
+                    TICKET_CLASS_CODE.find((el) => el?.code === booking?.tickets[0]?.ticketClass)
+                      ?.v_name
+                  }
+                </span>
                 <span>
                   {`${getFormatDay(
                     moment(booking?.tickets[0]?.departureDate, DATE_FORMAT_BACK_END).format(
@@ -76,12 +77,6 @@ const BookingInfo = () => {
                     booking?.tickets[0]?.departureDate,
                   )}{' '}
                 </span>
-              </Col>
-              <Col className='air-box no-gap'>
-                <FromUpdateCode
-                  type={TYPE_TICKET_INFO?.DEPARTURE}
-                  flightPNR={booking?.tickets[0]?.reservationCode}
-                />
               </Col>
             </Row>
           </div>
@@ -121,18 +116,11 @@ const BookingInfo = () => {
                     )}
                   </span>
                 </Col>
-                <Col className='air-box'>
-                  <FromUpdateCode
-                    type={TYPE_TICKET_INFO?.RETURN}
-                    flightPNR={booking?.tickets[1]?.reservationCode}
-                  />
-                </Col>
               </Row>
             </div>
           )}
         </Col>
       </Row>
-      <ModalUpdateFlightPNRCode modal={updateFlightPNRCode} setModal={setUpdateFlightPNRCode} />
     </div>
   );
 };

@@ -1,8 +1,8 @@
 import { Button, Form, message } from 'antd';
 import Input from 'antd/lib/input/Input';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { updateFlightBookerInfo } from '~/apis/flight';
+import { updateFlightContactInfo } from '~/apis/flight';
 import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
 import { some } from '~/utils/constants/constant';
 import { useAppDispatch } from '~/utils/hook/redux';
@@ -11,26 +11,26 @@ interface Props {
   booking: some;
   handleClose: () => void;
 }
-const EditBooker: React.FC<Props> = ({ handleClose, booking }) => {
+const EditContact: React.FC<Props> = ({ handleClose, booking }) => {
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
 
-  const { lastName, firstName, email, phone1 } = booking?.mainContact;
+  const { lastName, firstName, email, phone } = booking?.contact;
 
   const initialValues = {
     firstName: firstName,
     lastName: lastName,
     email: email,
-    phoneNumber: phone1,
+    phone: phone,
   };
 
-  const sendUpdateFlightBookerInfor = async (queryParams = {}) => {
+  const sendUpdateFlightContactInfo = async (bookingId: number, queryParams = {}) => {
     try {
-      const { data } = await updateFlightBookerInfo(queryParams);
+      const { data } = await updateFlightContactInfo(bookingId, queryParams);
       if (data.code === 200) {
         handleClose();
         message.success('Thay đổi thông tin thành công');
-        dispatch(fetFlightBookingsDetail({ filters: { dealId: booking?.id } }));
+        dispatch(fetFlightBookingsDetail({ id: booking?.booking?.bookingId }));
       } else {
         message.error(data?.message);
       }
@@ -40,25 +40,21 @@ const EditBooker: React.FC<Props> = ({ handleClose, booking }) => {
   };
 
   const onFinish = (values: some) => {
-    booking?.mainContact?.id &&
-      sendUpdateFlightBookerInfor({
-        ...values,
-        bookerId: booking?.mainContact?.id,
-      });
+    booking?.contact?.id && sendUpdateFlightContactInfo(booking?.booking?.bookingId, values);
   };
 
   return (
     <Form
       form={form}
       initialValues={initialValues}
-      hideRequiredMark
+      requiredMark={false}
       layout='vertical'
       onFinish={onFinish}
-      className="form-edit-booker"
+      className='form-edit-booker'
     >
       <Form.Item
         label='Họ'
-        name='firstName'
+        name='lastName'
         rules={[{ required: true, message: 'Vui lòng nhập họ!' }]}
       >
         <Input placeholder='Nhập họ' />
@@ -66,15 +62,15 @@ const EditBooker: React.FC<Props> = ({ handleClose, booking }) => {
 
       <Form.Item
         label='Tên đệm và tên'
-        name='lastName'
-        rules={[{ required: true, message: 'Vui lòng nhập email tên!' }]}
+        name='firstName'
+        rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}
       >
         <Input placeholder='Nhập điện email' />
       </Form.Item>
 
       <Form.Item
         label='Số điện thoại'
-        name='phoneNumber'
+        name='phone'
         rules={[
           { required: true, whitespace: true, message: 'Vui lòng nhập số điện thoại!' },
           {
@@ -125,4 +121,4 @@ const EditBooker: React.FC<Props> = ({ handleClose, booking }) => {
   );
 };
 
-export default EditBooker;
+export default EditContact;

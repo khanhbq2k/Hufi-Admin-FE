@@ -6,12 +6,6 @@ import { BookingsOnlineType, PagingOnline } from '~/features/flight/online/Modal
 import { some } from '~/utils/constants/constant';
 import { adapterQueryFlight } from '~/utils/helpers/helpers';
 
-export interface AllowAgentType {
-  code: string;
-  id: number;
-  name: string;
-}
-
 export interface SystemState {
   isLoading: boolean;
   bookingsOnline: BookingsOnlineType[];

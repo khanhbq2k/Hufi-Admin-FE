@@ -1,552 +1,353 @@
-import { DatePicker, Form, Input, message, Modal, Popconfirm, Select, Table, Tooltip } from 'antd';
+import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select } from 'antd';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { updateFlightGuestInfo } from '~/apis/flight';
-import { IconCalendar, IconCloseNoneCycle, IconEditBlue } from '~/assets';
+import { IconCalendar, IconChevronDown, IconCloseNoneCycle, IconEditBlue } from '~/assets';
 import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
 import '~/features/flight/online/detail/FlightDetail.scss';
 import { some } from '~/utils/constants/constant';
-import { listGender } from '~/utils/constants/dataOptions';
+import { LIST_GENDER } from '~/utils/constants/dataOptions';
 import { isEmpty } from '~/utils/helpers/helpers';
 import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
 
-const getEatGuest = (
-  guestId: number,
-  ancillaries: some[],
-  isDeparture: boolean,
-  ancillaryType: string,
-) => {
-  let result: some[] = [];
-  ancillaries.forEach((el: some) => {
-    if (el.departure === isDeparture) {
-      el.items.forEach((item: some) => {
-        if (item.guestId === guestId && item.ancillaryType === ancillaryType) {
-          result.push({
-            quantity: item.quantity,
-            title: item.title,
-            price: item.price,
-            ancillaryBookingId: item.ancillaryBookingId,
-          });
-        }
-      });
-    }
-  });
-  return result;
-};
+let needReload = false;
 
-const getInputType = (dataIndex: string) => {
-  switch (dataIndex) {
-    case 'fullName':
-    case 'outboundEticketNo':
-    case 'inboundEticketNo':
-    case 'passport':
-      return 'text';
-    case 'dob':
-    case 'passportExpiry':
-      return 'date';
-    case 'gender':
-    case 'passportCountry':
-    case 'nationality':
-      return 'select';
-    default:
-      return '';
-  }
-};
-
-const getRulesType = (dataIndex: string) => {
-  switch (dataIndex) {
-    case 'fullName':
-      return [
-        {
-          required: true,
-          message: `Vui lòng nhập họ và tên`,
-        },
-      ];
-    default:
-      return [];
-  }
-};
-
-interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
-  editing: boolean;
-  dataIndex: string;
-  title: any;
-  inputType: 'number' | 'text' | 'date' | 'select';
-  record: some;
-  index: number;
-  children: React.ReactNode;
-  rules: some[];
-  optionsSelect: some[];
-}
-
-const EditableCell: React.FC<EditableCellProps> = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  rules,
-  optionsSelect,
-  ...restProps
-}) => {
-  const inputNode =
-    inputType === 'text' ? (
-      <Input />
-    ) : inputType === 'select' ? (
-      dataIndex === 'gender' ? (
-        <Select>
-          {optionsSelect.map((el: some) => (
-            <Select.Option value={el.code}>{el.name}</Select.Option>
-          ))}
-        </Select>
-      ) : (
-        <Select
-          showSearch
-          filterOption={(input, option) =>
-            (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
-          }
-        >
-          {optionsSelect.map((el: some) => (
-            <Select.Option value={el.name}>{el.name}</Select.Option>
-          ))}
-        </Select>
-      )
-    ) : inputType === 'date' ? (
-      <DatePicker
-        format='DD/MM/YYYY'
-        placeholder='DD/MM/YYYY'
-        allowClear={false}
-        suffixIcon={<IconCalendar />}
-      />
-    ) : null;
-
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item name={dataIndex} style={{ margin: 0 }} rules={rules}>
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
-
-let countApiUpdate = 0;
 const InfoGuestsModal = (props: any) => {
   const { visibleModal, setVisibleModal } = props;
-  const [form] = Form.useForm();
   const dispatch = useAppDispatch();
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
-  const countries = useAppSelector((state) => state.systemReducer.countries);
-  const [editingKey, setEditingKey] = useState('');
-  const [data, setData] = useState(booking?.guests || []);
-
-  const columns = [
-    {
-      title: '#',
-      key: 'index',
-      render: (text: any, record: some, index: any) => {
-        return `${index + 1}`;
-      },
-      width: 40,
-      fixed: 'left',
-      align: 'center',
-    },
-    {
-      title: 'Họ và tên',
-      key: 'fullName',
-      dataIndex: 'fullName',
-      fixed: 'left',
-      editable: true,
-    },
-    {
-      title: 'Giới tính',
-      key: 'gender',
-      dataIndex: 'gender',
-      width: 85,
-      render: (text: any) => {
-        return `${text === 'F' ? 'Nữ' : 'Nam'}`;
-      },
-      editable: true,
-    },
-    {
-      title: 'Ngày sinh',
-      key: 'dob',
-      dataIndex: 'dob',
-      width: 140,
-      editable: true,
-      render: (text: any) => {
-        return (
-          <>
-            {!isEmpty(text) ? <span>{moment(text, 'DD-MM-YYYY').format('DD/MM/YYYY')}</span> : ''}
-          </>
-        );
-      },
-    },
-    {
-      title: 'Độ tuổi',
-      key: 'ageCategory',
-      dataIndex: 'ageCategory',
-      render: (text: any) => {
-        return `${text == 'adult' ? 'Người lớn' : text == 'children' ? 'Trẻ em' : 'Em bé'}`;
-      },
-      width: 85,
-    },
-    {
-      title: 'Hành lý chiều đi',
-      key: 'outboundBaggage',
-      dataIndex: 'outboundBaggage',
-      render: (text: any) => {
-        return (
-          <>
-            {!isEmpty(text) ? (
-              <span>
-                <span className='value-col-inbound-baggage'>{`${text.weight}kg`}</span>
-                {/* <span>{`(${formatMoney(text.price)})`}</span> */}
-              </span>
-            ) : (
-              ''
-            )}
-          </>
-        );
-      },
-      width: 75,
-    },
-    {
-      title: 'Hành lý chiều về',
-      key: 'inboundBaggage',
-      dataIndex: 'inboundBaggage',
-      width: 75,
-      render: (text: any) => {
-        return (
-          <>
-            {!isEmpty(text) ? (
-              <span>
-                <span className='value-col-inbound-baggage'>{`${text.weight}kg`}</span>
-                {/* <span>{`(${formatMoney(text.price)})`}</span> */}
-              </span>
-            ) : (
-              ''
-            )}
-          </>
-        );
-      },
-    },
-    {
-      title: 'Suất ăn chiều đi',
-      key: 'id',
-      dataIndex: 'id',
-      width: 105,
-      render: (text: any) => {
-        const listEat: some[] = getEatGuest(text, booking.ancillaries || [], true, 'meal');
-        return (
-          <>
-            {!isEmpty(listEat) ? (
-              <div className='value-col-list-eat'>
-                {listEat.map((el) => (
-                  <Tooltip title={el.title} key={el.ancillaryBookingId}>
-                    <span className='item-eat'>{`${el.quantity} suất - ${Math.floor(
-                      (el?.price || 0) / 1000,
-                    ).toLocaleString('de-DE')}k`}</span>
-                  </Tooltip>
-                ))}
-              </div>
-            ) : (
-              ''
-            )}
-          </>
-        );
-      },
-    },
-    {
-      title: 'Suất ăn chiều về',
-      key: 'id',
-      dataIndex: 'id',
-      width: 105,
-      render: (text: any) => {
-        const listEat: some[] = getEatGuest(text, booking.ancillaries || [], false, 'meal');
-        return (
-          <>
-            {!isEmpty(listEat) ? (
-              <div className='value-col-list-eat'>
-                {listEat.map((el) => (
-                  <Tooltip title={el.title} key={el.ancillaryBookingId}>
-                    <span className='item-eat'>{`${el.quantity} suất - ${Math.floor(
-                      (el?.price || 0) / 1000,
-                    ).toLocaleString('de-DE')}k`}</span>
-                  </Tooltip>
-                ))}
-              </div>
-            ) : (
-              ''
-            )}
-          </>
-        );
-      },
-    },
-    {
-      title: 'Chỗ ngồi chiều đi',
-      key: 'id',
-      width: 105,
-      dataIndex: 'id',
-      render: (text: any) => {
-        const listEat: some[] = getEatGuest(text, booking.ancillaries || [], true, 'seat');
-        return (
-          <>
-            {!isEmpty(listEat) ? (
-              <div className='value-col-list-eat'>
-                {listEat.map((el, idx) => (
-                  <span className='item-eat' key={idx.toString()}>{`${el.title} - ${Math.floor(
-                    (el?.price || 0) / 1000,
-                  ).toLocaleString('de-DE')}k`}</span>
-                ))}
-              </div>
-            ) : (
-              ''
-            )}
-          </>
-        );
-      },
-    },
-    {
-      title: 'Chỗ ngồi chiều về',
-      key: 'id',
-      width: 105,
-      dataIndex: 'id',
-      render: (text: any) => {
-        const listEat: some[] = getEatGuest(text, booking.ancillaries || [], false, 'seat');
-        return (
-          <>
-            {!isEmpty(listEat) ? (
-              <div className='value-col-list-eat'>
-                {listEat.map((el, idx) => (
-                  <span className='item-eat' key={idx.toString()}>{`${el.title} - ${Math.floor(
-                    (el?.price || 0) / 1000,
-                  ).toLocaleString('de-DE')}k`}</span>
-                ))}
-              </div>
-            ) : (
-              ''
-            )}
-          </>
-        );
-      },
-    },
-    {
-      title: 'Số vé chiều đi',
-      key: 'outboundEticketNo',
-      dataIndex: 'outboundEticketNo',
-      width: 125,
-      editable: true,
-    },
-    {
-      title: 'Số vé chiều về',
-      key: 'inboundEticketNo',
-      dataIndex: 'inboundEticketNo',
-      width: 125,
-      editable: true,
-    },
-    {
-      title: 'Số hộ chiếu',
-      key: 'passport',
-      width: 125,
-      dataIndex: 'passport',
-      editable: true,
-    },
-    {
-      title: 'Thời hạn hộ chiếu',
-      key: 'passportExpiry',
-      dataIndex: 'passportExpiry',
-      width: 140,
-      editable: true,
-      render: (text: any) => {
-        return (
-          <>
-            {!isEmpty(text) ? <span>{moment(text, 'DD-MM-YYYY').format('DD/MM/YYYY')}</span> : ''}
-          </>
-        );
-      },
-    },
-    {
-      title: 'Quốc tịch',
-      key: 'passportCountry',
-      dataIndex: 'passportCountry',
-      width: 115,
-      editable: true,
-    },
-    {
-      title: 'Nước cấp hộ chiếu',
-      key: 'nationality',
-      dataIndex: 'nationality',
-      width: 115,
-      editable: true,
-    },
-    {
-      title: '',
-      align: 'center',
-      width: 45,
-      render: (text: any, record: any, index: any) => {
-        const editable = isEditing(record);
-        return (
-          <>
-            {editable ? (
-              <Popconfirm
-                placement='topRight'
-                title='Bạn có chắc muốn lưu lại chỉnh sửa này?'
-                okText='Đồng ý'
-                cancelText='Hủy'
-                onConfirm={() => save(record.id)}
-              >
-                <span style={{ color: '#004EBC' }}>Lưu</span>
-              </Popconfirm>
-            ) : (
-              <IconEditBlue onClick={() => edit(record)} />
-            )}
-          </>
-        );
-      },
-      key: 'action',
-      fixed: 'right',
-    },
-  ];
-
-  const save = async (key: React.Key) => {
-    try {
-      const row = (await form.validateFields()) as some;
-      const newData = [...booking.guests];
-      const index = newData.findIndex((item) => key === item.id);
-      const item = newData[index];
-      const itemUpdate: some = {
-        guestId: key,
-        ...row,
-        dob: !isEmpty(row.dob) ? row.dob.format('DD-MM-YYYY') : null,
-        passportExpiry: !isEmpty(row.passportExpiry)
-          ? row.passportExpiry.format('DD-MM-YYYY')
-          : null,
-        inboundEticketNumber: row.inboundEticketNo,
-        outboundEticketNumber: row.outboundEticketNo,
-        nationalityCode: !isEmpty(row.nationality)
-          ? countries?.find((el: some) => el.name === row.nationality)?.code
-          : null,
-        passportCountryCode: !isEmpty(row.passportCountry)
-          ? countries?.find((el: some) => el.name === row.passportCountry)?.code
-          : null,
-        firstName: item.firstName,
-        lastName: item.lastName,
-      };
-      delete itemUpdate.inboundEticketNo;
-      delete itemUpdate.outboundEticketNo;
-      delete itemUpdate.nationality;
-      delete itemUpdate.passportCountry;
-      const dataDto = {
-        bookingId: booking.id,
-        updates: [itemUpdate],
-      };
-      const { data } = await updateFlightGuestInfo(dataDto);
-      if (data.code === 200) {
-        message.success('Cập nhật thông tin thành công!');
-        countApiUpdate += 1;
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        setData(newData);
-      } else {
-        message.error(data.message);
-      }
-      setEditingKey('');
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
-    }
-  };
+  const [data, setData] = useState(booking?.passengers || []);
 
   const handleCloseModal = () => {
-    if (countApiUpdate > 0) {
-      dispatch(fetFlightBookingsDetail({ filters: { dealId: booking.id } }));
+    if (needReload) {
+      dispatch(fetFlightBookingsDetail({ id: booking?.booking?.bookingId }));
     }
     setVisibleModal(false);
   };
 
   useEffect(() => {
     if (visibleModal) {
-      countApiUpdate = 0;
-      setData(booking?.guests);
+      needReload = false;
+      setData(booking?.passengers);
     }
   }, [visibleModal]);
 
-  const isEditing = (record: some) => record.id === editingKey;
-
-  const edit = (record: some) => {
-    form.setFieldsValue({
-      ...record,
-      passportExpiry: !isEmpty(record.passportExpiry)
-        ? moment(record.passportExpiry, 'DD-MM-YYYY')
-        : null,
-      dob: !isEmpty(record.dob) ? moment(record.dob, 'DD-MM-YYYY') : null,
-    });
-    setEditingKey(record.id);
-  };
-
-  const mergedColumns = columns.map((col: some) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record: some) => ({
-        record,
-        inputType: getInputType(col.dataIndex),
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-        rules: getRulesType(col.dataIndex),
-        optionsSelect: getOptionSelect(col.dataIndex),
-      }),
-    };
-  });
-
-  const getOptionSelect = (dataIndex: string) => {
-    switch (dataIndex) {
-      case 'gender':
-        return listGender;
-      case 'passportCountry':
-      case 'nationality':
-        return countries;
-      default:
-        return [];
-    }
-  };
-
   return (
     <Modal
-      className='modal-delete-invoice modal-info-guests'
+      className='model-info-guest-border modal-info-guests'
       visible={visibleModal}
       onCancel={handleCloseModal}
       footer={false}
       closeIcon={<IconCloseNoneCycle />}
       centered
-      width={1400}
+      width={1000}
     >
       <div className='title'>Thông tin hành khách</div>
-      <Form form={form} component={false}>
-        <Table
-          rowKey={(record) => record.id}
-          columns={mergedColumns}
-          dataSource={data}
-          pagination={false}
-          scroll={{ x: 1900 }}
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-        />
-      </Form>
+      <div className='content'>
+        {data.map((el: some, idx: number) => (
+          <GuestDetail key={el.id} idx={idx} item={el} />
+        ))}
+      </div>
     </Modal>
   );
 };
 export default InfoGuestsModal;
+
+const GuestDetail = (props: some) => {
+  const { item, idx } = props;
+  const { confirm } = Modal;
+  const [form] = Form.useForm();
+  const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
+  const countries = useAppSelector((state) => state.systemReducer.countries);
+
+  const onFinish = async (values: any) => {
+    confirm({
+      title: 'Bạn có chắc chắn muốn lưu lại thông tin đã sửa?',
+      content: 'Vui lòng xác nhận kỹ thông tin',
+      onOk() {
+        handleSubmitForm(values);
+      },
+      onCancel() {},
+    });
+  };
+
+  const handleSubmitForm = async (values: any) => {
+    try {
+      console.log(values);
+      const itemUpdate: some = {
+        ...item,
+        ...values,
+        passengerId: item.id,
+        dob: !isEmpty(values.dob) ? values.dob.format('DD-MM-YYYY') : null,
+        passportExpiry: !isEmpty(values.passportExpiry)
+          ? values.passportExpiry.format('DD-MM-YYYY')
+          : null,
+        eticketNumber: values.eticketNumber,
+        nationalityCode: values.nationalityCode,
+        passportCountryCode: values.passportCountryCode,
+        firstName: values.firstName ? values.firstName : item.firstName,
+        lastName: values.lastName ? values.lastName : item.lastName,
+      };
+
+      const { data } = await updateFlightGuestInfo(booking?.booking?.bookingId, [itemUpdate]);
+      if (data.code === 200) {
+        message.success('Cập nhật thông tin thành công!');
+        form.setFieldsValue({
+          isEdit: false,
+          fullName: `${itemUpdate.lastName} ${itemUpdate.firstName}`,
+        });
+        needReload = true;
+      } else {
+        message.error(data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return (
+    <Form
+      form={form}
+      scrollToFirstError
+      colon={false}
+      className='form-add-invoice form-edit-guest'
+      initialValues={{
+        isEdit: false,
+        lastName: item.lastName,
+        firstName: item.firstName,
+        fullName: item.lastName + ' ' + item.firstName,
+        passport: item.passport,
+        gender: item.gender,
+        passportExpiry: !isEmpty(item.passportExpiry)
+          ? moment(item.passportExpiry, 'DD-MM-YYYY')
+          : null,
+        dob: !isEmpty(item.dob) ? moment(item.dob, 'DD-MM-YYYY') : null,
+        eticketNumber: item.eticketNumber,
+        passportCountryCode: item.passportCountryCode,
+        nationalityCode: item.nationalityCode,
+      }}
+      requiredMark={false}
+      onFinish={onFinish}
+      onValuesChange={(changedValues) => {}}
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 16 }}
+    >
+      <div className='guest-item'>
+        <div className='left-content'>{idx + 1}</div>
+        <div className='right-content'>
+          <Form.Item
+            shouldUpdate={(prevValues, curValues) => prevValues.isEdit !== curValues.isEdit}
+            style={{ marginBottom: 0 }}
+            labelCol={{ span: 0 }}
+            wrapperCol={{ span: 24 }}
+          >
+            {() => {
+              return (
+                <>
+                  <div className='header-content'>
+                    <span style={{ fontWeight: 500 }}>{`${form.getFieldValue('fullName')}`}</span>
+                    <span className='sub-text'>{`${
+                      item.ageCategory == 'ADT'
+                        ? ' - Người lớn'
+                        : item.ageCategory == 'CHD'
+                        ? ' - Trẻ em'
+                        : ' - Em bé'
+                    }`}</span>
+                    {form.getFieldValue('isEdit') ? (
+                      <>
+                        <Button
+                          type='text'
+                          style={{ color: '#004EBC', padding: '0px 8px' }}
+                          htmlType='submit'
+                        >
+                          Lưu
+                        </Button>
+                        <Button
+                          type='text'
+                          style={{ color: '#677072', padding: '0px 8px' }}
+                          onClick={() =>
+                            form.setFieldsValue({
+                              isEdit: false,
+                            })
+                          }
+                        >
+                          Hủy
+                        </Button>
+                      </>
+                    ) : (
+                      <IconEditBlue
+                        className='icon-edit'
+                        onClick={() => form.setFieldsValue({ isEdit: true })}
+                      />
+                    )}
+                  </div>
+                  <Row gutter={12}>
+                    <Col span={10}>
+                      <Row gutter={12}>
+                        <Col span={6}>Họ và tên</Col>
+                        <Col span={18}>
+                          {form.getFieldValue('isEdit') ? (
+                            <Row gutter={8}>
+                              <Col span={8}>
+                                <Form.Item
+                                  name='lastName'
+                                  label=''
+                                  rules={[{ required: true, message: `Vui lòng nhập họ` }]}
+                                  labelCol={{ span: 0 }}
+                                >
+                                  <Input allowClear placeholder='Họ' />
+                                </Form.Item>
+                              </Col>
+                              <Col span={16}>
+                                <Form.Item
+                                  name='firstName'
+                                  label=''
+                                  rules={[{ required: true, message: `Vui lòng nhập tên` }]}
+                                  labelCol={{ span: 0 }}
+                                >
+                                  <Input allowClear placeholder='Tên đệm và tên' />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          ) : (
+                            <div
+                              style={{
+                                paddingLeft: form.getFieldValue('isEdit') ? 0 : 6,
+                              }}
+                              className='value-text'
+                            >
+                              {form.getFieldValue('fullName')}
+                            </div>
+                          )}
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item name='passport' label='Số hộ chiếu' labelCol={{ span: 12 }}>
+                        <Input
+                          allowClear
+                          disabled={!form.getFieldValue('isEdit')}
+                          placeholder={form.getFieldValue('isEdit') ? '' : 'Không có'}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={12} style={{ marginTop: '-14px' }}>
+                    <Col span={10}>
+                      <Form.Item
+                        name='gender'
+                        label='Giới tính'
+                        labelCol={{ span: 6 }}
+                        className='value-text'
+                      >
+                        <Select
+                          disabled={!form.getFieldValue('isEdit')}
+                          suffixIcon={!form.getFieldValue('isEdit') ? null : <IconChevronDown />}
+                          style={{ width: '50%' }}
+                        >
+                          {LIST_GENDER.map((el: some) => (
+                            <Select.Option value={el.code} key={el.code}>
+                              {el.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name='passportExpiry'
+                        label='Thời hạn hộ chiếu'
+                        labelCol={{ span: 12 }}
+                      >
+                        <DatePicker
+                          format='DD/MM/YYYY'
+                          placeholder={form.getFieldValue('isEdit') ? '' : 'Không có'}
+                          allowClear={false}
+                          suffixIcon={<IconCalendar />}
+                          disabled={!form.getFieldValue('isEdit')}
+                          style={{ paddingLeft: '6px' }}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={12} style={{ marginTop: '-14px' }}>
+                    <Col span={10}>
+                      <Form.Item name='dob' label='Ngày sinh' labelCol={{ span: 6 }}>
+                        <DatePicker
+                          format='DD/MM/YYYY'
+                          allowClear={false}
+                          suffixIcon={<IconCalendar />}
+                          placeholder={form.getFieldValue('isEdit') ? '' : 'Không có'}
+                          disabled={!form.getFieldValue('isEdit')}
+                          style={{ width: '50%', paddingLeft: '6px' }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name='passportCountryCode'
+                        label='Nước cấp hộ chiếu'
+                        labelCol={{ span: 12 }}
+                      >
+                        <Select
+                          disabled={!form.getFieldValue('isEdit')}
+                          suffixIcon={!form.getFieldValue('isEdit') ? null : <IconChevronDown />}
+                          showSearch
+                          filterOption={(input, option) =>
+                            (option!.children as unknown as string)
+                              .toLowerCase()
+                              .includes(input.toLowerCase())
+                          }
+                          placeholder={form.getFieldValue('isEdit') ? '' : 'Không có'}
+                        >
+                          {countries.map((el: some, idx: number) => (
+                            <Select.Option value={el.code} key={`passportCountryCode-${idx}`}>
+                              {el.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={12} style={{ marginTop: '-14px' }}>
+                    <Col span={10}>
+                      <Form.Item name='eticketNumber' label='Số vé' labelCol={{ span: 6 }}>
+                        <Input
+                          allowClear
+                          placeholder={form.getFieldValue('isEdit') ? '' : 'Không có'}
+                          disabled={!form.getFieldValue('isEdit')}
+                          title={form.getFieldValue('eticketNumber')}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item name='nationalityCode' label='Quốc tịch' labelCol={{ span: 8 }}>
+                        <Select
+                          disabled={!form.getFieldValue('isEdit')}
+                          suffixIcon={!form.getFieldValue('isEdit') ? null : <IconChevronDown />}
+                          showSearch
+                          filterOption={(input, option) =>
+                            (option!.children as unknown as string)
+                              .toLowerCase()
+                              .includes(input.toLowerCase())
+                          }
+                          placeholder={form.getFieldValue('isEdit') ? '' : 'Không có'}
+                        >
+                          {countries.map((el: some, idx: number) => (
+                            <Select.Option value={el.code} key={`nationalityCode-${idx}`}>
+                              {el.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </>
+              );
+            }}
+          </Form.Item>
+        </div>
+      </div>
+    </Form>
+  );
+};

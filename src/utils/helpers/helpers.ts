@@ -1,12 +1,9 @@
 import Cookie from 'js-cookie';
 import * as constants from '~/utils/constants/constant';
 import { some } from '~/utils/constants/constant';
-import { listAgeCategory } from '../constants/dataOptions';
-import moment from 'moment';
 
 export function isAuthenticate() {
-  // return !!Cookie.get(constants.TOKEN);
-  return true;
+  return !!Cookie.get(constants.TOKEN);
 }
 
 const has = Object.prototype.hasOwnProperty;
@@ -18,10 +15,6 @@ export const isEmpty = (prop: any) => {
     (has.call(prop, 'length') && prop.length === 0) ||
     (prop.constructor === Object && Object.keys(prop).length === 0)
   );
-};
-
-export const formatAgeCategory = (stt: string) => {
-  return listAgeCategory.find((el: some) => el.code == stt)?.name;
 };
 
 export const removeAccent = (str: string) => {
@@ -48,18 +41,10 @@ export const getAbsoluteMonths = (momentDate: any) => {
   return months + years * 12;
 };
 
-export const isHandling = (booking: some, userInfo: some) => {
-  return true;
-};
-
 export const getMonthDifference = (startDate: any, endDate: any) => {
   const startMonths = getAbsoluteMonths(startDate);
   const endMonths = !isEmpty(endDate) ? getAbsoluteMonths(endDate) : startMonths;
   return endMonths - startMonths;
-};
-
-export const isSameAirline = (booking: some) => {
-  return true;
 };
 
 export const adapterQueryFlight = (formData: some = {}, paging: some = {}) => {
@@ -195,7 +180,7 @@ export const getStatusFlight = (status: any) => {
   }
 };
 
-export const listPnrStatus = [
+export const PNR_STATUS = [
   {
     title: 'Chưa có',
     stt: 'pending',

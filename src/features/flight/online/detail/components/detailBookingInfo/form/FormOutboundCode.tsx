@@ -1,10 +1,10 @@
 import { Button, Col, Divider, Form, Input, message, Popconfirm, Row, Select, Tag } from 'antd';
 import { useEffect, useState } from 'react';
-import { updateFlightBookingCodes } from '~/apis/flight';
+import { updateFlightBookingPnr } from '~/apis/flight';
 import { IconEdit } from '~/assets';
 import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
 import { some } from '~/utils/constants/constant';
-import { formatMoney, isHandling, listPnrStatus } from '~/utils/helpers/helpers';
+import { formatMoney, PNR_STATUS } from '~/utils/helpers/helpers';
 import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
 
 const { Option } = Select;
@@ -13,15 +13,14 @@ const FormOutboundCode: any = () => {
   const [editForm, setEditForm] = useState<boolean>(false);
 
   const airlines = useAppSelector((state) => state.systemReducer.airlines);
-  const userInfo = useAppSelector((state) => state.systemReducer.userInfo);
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
 
   const [form] = Form.useForm();
-  const outboundPnrStatus = listPnrStatus.find((el) => el.stt == booking?.booking?.bookingStatus);
+  const outboundPnrStatus = PNR_STATUS.find((el) => el.stt == booking?.booking?.bookingStatus);
 
   const updateFlightBookingCode = async (queryParams: any) => {
     try {
-      const { data } = await updateFlightBookingCodes(queryParams);
+      const { data } = await updateFlightBookingPnr(booking?.booking?.bookingId, queryParams);
       if (data.code === 200) {
         message.success(' Cập nhật mã vé chiều đi thành công!');
         setEditForm(false);
@@ -36,13 +35,11 @@ const FormOutboundCode: any = () => {
 
   useEffect(() => {
     form.setFieldsValue({
+      outboundAirline: booking?.tickets[0].marketingAirline,
       outboundCode: booking?.tickets[0].reservationCode,
       outboundStatus: booking?.booking.bookingStatus,
-      outboundAirline: booking?.tickets[0].marketingAirline,
     });
   }, [booking, editForm]);
-
-  const isHandLing = isHandling(booking, userInfo);
 
   return (
     <Row className='info-airline'>
@@ -57,7 +54,7 @@ const FormOutboundCode: any = () => {
             </span>
             <Tag color='success'>{booking?.tickets[0].reservationCode || 'Chưa có'}</Tag>
             <span style={{ color: outboundPnrStatus?.color }}>{outboundPnrStatus?.title}</span>
-            {isHandLing && <IconEdit className='pointer' onClick={() => setEditForm(true)} />}
+            {<IconEdit className='pointer' onClick={() => setEditForm(true)} />}
           </>
         ) : (
           <Form form={form} className='form-code'>
@@ -77,7 +74,7 @@ const FormOutboundCode: any = () => {
             </Form.Item>
             <Form.Item name='outboundStatus'>
               <Select size='small' style={{ width: 120 }}>
-                {listPnrStatus?.map((value: some) => {
+                {PNR_STATUS?.map((value: some) => {
                   return (
                     <Option key={value.stt} disabled={value?.disable} value={value.stt}>
                       {value.title}
@@ -93,11 +90,10 @@ const FormOutboundCode: any = () => {
                 const { outboundStatus, outboundCode, outboundAirline } =
                   form?.getFieldsValue(true);
                 updateFlightBookingCode({
-                  bookingId: booking?.booking?.bookingId,
+                  ticketId: booking?.tickets[0]?.id,
                   pnr: outboundCode,
                   status: outboundStatus,
                   airline: outboundAirline,
-                  ticketId: booking?.ticket[0]?.id,
                 });
               }}
               okText='Ok'

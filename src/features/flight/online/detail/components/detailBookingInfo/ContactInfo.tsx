@@ -1,9 +1,8 @@
 import { Col, Divider, Modal, Row } from 'antd';
 import moment from 'moment';
 import { useState } from 'react';
-import { IconCallDark, IconCloseOutline, IconEdit, IconEmail, IconInfomation } from '~/assets';
-import { MODAL_CONTACT_INFO } from '~/features/flight/constant';
-import EditBooker from '~/features/flight/online/detail/components/modalDetailFlight/EditBooker';
+import { IconCallDark, IconCloseOutline, IconEdit, IconEmail } from '~/assets';
+import EditContact from '~/features/flight/online/detail/components/modalDetailFlight/EditContact';
 import { some } from '~/utils/constants/constant';
 import { DATE_TIME_FORMAT } from '~/utils/constants/moment';
 import {
@@ -12,30 +11,16 @@ import {
   getPaymentStatusFlight,
   getStatusFlight,
   isEmpty,
-  isSameAirline /*  */,
 } from '~/utils/helpers/helpers';
 import { useAppSelector } from '~/utils/hook/redux';
-import ModalUpdateFlightPNRCode from './modal/ModalUpdateFlightPNRCode';
-
-const getModalContactInfo = (dataModal: some) => {
-  switch (dataModal?.key) {
-    case MODAL_CONTACT_INFO.EDIT_BOOKER:
-      return <EditBooker handleClose={dataModal?.handleCloseModal} booking={dataModal?.booking} />;
-    default:
-      break;
-  }
-};
 
 const ContactInfo = () => {
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
-  const [updateFlightPNRCode, setUpdateFlightPNRCode] = useState<string>('');
 
   const [modal, setModal] = useState<some>({
     open: false,
-    type: null,
     title: null,
   });
-  const [visibleModal, setVisibleModal] = useState(false);
 
   const paymentData = [
     {
@@ -166,7 +151,6 @@ const ContactInfo = () => {
   const paymentStatus = getPaymentStatusFlight(booking?.payment?.paymentStatus);
   const bookStatus = getBookStatusFlight(booking?.booking.bookingStatus);
   const status = getStatusFlight(booking?.booking.bookingStatus);
-  const sameAirline = isSameAirline(booking);
 
   const handleCloseModal = () => {
     setModal({
@@ -200,16 +184,15 @@ const ContactInfo = () => {
           <div className='main-contact-info'>
             <span className='text-bold'>Người liên hệ:</span>
             <span>{`${booking?.contact?.name} `}</span>
-            {/* <IconEdit
+            <IconEdit
               onClick={() => {
                 setModal({
                   open: true,
-                  type: MODAL_CONTACT_INFO.EDIT_BOOKER,
                   title: 'Sửa thông tin liên hệ',
                 });
               }}
-              style={{ cursor: 'pointer' }}
-            /> */}
+              style={{ cursor: 'pointer', marginLeft: 4 }}
+            />
           </div>
           <div className='main-contact-info' style={{ gap: 8, padding: 8 }}>
             <div className='gap-4-center'>
@@ -247,12 +230,7 @@ const ContactInfo = () => {
           </div>
         </Col>
       </Row>
-      <ModalUpdateFlightPNRCode
-        sameAirline={sameAirline}
-        modal={updateFlightPNRCode}
-        setModal={setUpdateFlightPNRCode}
-      />
-      {/* <Modal
+      <Modal
         className='wrapper-modal'
         title={<div className='title-modal'>{modal?.title}</div>}
         visible={modal?.open}
@@ -261,12 +239,8 @@ const ContactInfo = () => {
         onCancel={handleCloseModal}
         width={undefined}
       >
-        {getModalContactInfo({
-          key: modal?.type,
-          handleCloseModal,
-          booking,
-        })}
-      </Modal> */}
+        <EditContact handleClose={handleCloseModal} booking={booking} />;
+      </Modal>
     </div>
   );
 };

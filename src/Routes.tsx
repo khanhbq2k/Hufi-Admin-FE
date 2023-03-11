@@ -4,25 +4,20 @@ import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import {
   AirlinesType,
   AirportType,
-  AllowAgentType,
   fetAirlines,
   fetAirports,
+  fetCountries,
   fetUserInfoAsync,
-  visiblecollaps,
 } from '~/features/systems/systemSlice';
 import { isAuthenticate, isEmpty } from '~/utils/helpers/helpers';
 import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
-
-// component
 import HeaderContainer from '~/components/Layout/HeaderContainer';
 import LeftSideBar from '~/components/Layout/LeftSideBar';
 import Loading from '~/components/loading/Loading';
 import Dashboard from '~/features/example/Dashboard';
 import Login from '~/features/login/login';
-import { IS_COLLAPSIBLE, routes, some, TOKEN } from '~/utils/constants/constant';
-
+import { routes, some, TOKEN } from '~/utils/constants/constant';
 import '~/components/Layout/layout.scss';
-
 import FlightOnline from '~/features/flight/online/Flight';
 import FlightDetail from '~/features/flight/online/detail/FlightDetail';
 import PageNotFound from './components/404Page/PageNotFound';
@@ -39,11 +34,9 @@ const RoutesComponent: FC = () => {
   let location = useLocation();
   const dispatch = useAppDispatch();
   const userInfo: UserInfo = useAppSelector((state) => state.systemReducer.userInfo);
-  const allowAgents: AllowAgentType[] = useAppSelector((state) => state.systemReducer.allowAgents);
   const airlines: AirlinesType[] = useAppSelector((state) => state.systemReducer.airlines);
   const airports: AirportType[] = useAppSelector((state) => state.systemReducer.airports);
   const countries: some[] = useAppSelector((state) => state.systemReducer.countries);
-  const salesList: some[] = useAppSelector((state) => state.flightReducer.salesList);
 
   useEffect(() => {
     if (isAuthenticate()) {
@@ -56,15 +49,11 @@ const RoutesComponent: FC = () => {
       if (isEmpty(airports)) {
         dispatch(fetAirports());
       }
-      // if (isEmpty(countries)) {
-      //   dispatch(fetAllCountries());
-      // }
+      if (isEmpty(countries)) {
+        dispatch(fetCountries());
+      }
     }
   }, [location]);
-
-  useEffect(() => {
-    dispatch(visiblecollaps(localStorage.getItem(IS_COLLAPSIBLE) === 'true'));
-  }, []);
 
   const getUserInfo = async () => {
     try {
@@ -121,7 +110,6 @@ const ProtectedRoute: FC<SomeComponentProps> = ({
   children = null,
   isAllowed,
 }) => {
-  const collapsible: boolean = useAppSelector((state) => state.systemReducer.collapsible);
   if (!isAllowed) {
     return <Navigate to={redirectPath} replace />;
   }
@@ -131,7 +119,7 @@ const ProtectedRoute: FC<SomeComponentProps> = ({
       <HeaderContainer />
       <Layout hasSider className='container'>
         <LeftSideBar />
-        <Layout className={`site-layout ${collapsible ? 'site-layout-collap' : ''}`}>
+        <Layout className={`site-layout`}>
           <Content className='main-content'>{children ? children : <Outlet />}</Content>
         </Layout>
       </Layout>

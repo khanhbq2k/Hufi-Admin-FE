@@ -1,10 +1,10 @@
 import { Button, Col, Divider, Form, Input, message, Popconfirm, Row, Select, Tag } from 'antd';
 import { useEffect, useState } from 'react';
-import { updateFlightBookingCodes } from '~/apis/flight';
+import { updateFlightBookingPnr } from '~/apis/flight';
 import { IconEdit } from '~/assets';
 import { fetFlightBookingsDetail } from '~/features/flight/flightSlice';
 import { some } from '~/utils/constants/constant';
-import { formatMoney, isHandling, isSameAirline, listPnrStatus } from '~/utils/helpers/helpers';
+import { formatMoney, PNR_STATUS } from '~/utils/helpers/helpers';
 import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
 
 const { Option } = Select;
@@ -14,15 +14,14 @@ const FormInboundCode: any = () => {
   const [editForm, setEditForm] = useState<boolean>(false);
 
   const airlines = useAppSelector((state) => state.systemReducer.airlines);
-  const userInfo = useAppSelector((state) => state.systemReducer.userInfo);
   const booking = useAppSelector((state) => state.flightReducer.flightOnlineDetail);
 
   const [form] = Form.useForm();
-  const inboundPnrStatus = listPnrStatus.find((el) => el.stt == booking?.booking?.bookingStatus);
+  const inboundPnrStatus = PNR_STATUS.find((el) => el.stt == booking?.booking?.bookingStatus);
 
   const updateFlightBookingCode = async (queryParams: any) => {
     try {
-      const { data } = await updateFlightBookingCodes(queryParams);
+      const { data } = await updateFlightBookingPnr(booking?.booking?.bookingId, queryParams);
       if (data.code === 200) {
         message.success(' Cập nhật mã vé chiều về thành công!');
         setEditForm(false);
@@ -43,10 +42,6 @@ const FormInboundCode: any = () => {
     });
   }, [booking]);
 
-  const sameAirline = isSameAirline(booking);
-
-  const isHandLing = isHandling(booking, userInfo);
-
   return (
     <Row className='info-airline'>
       <Col className='air-box'>
@@ -60,9 +55,7 @@ const FormInboundCode: any = () => {
             </span>
             <Tag color='success'>{booking?.tickets[1]?.reservationCode || 'Chưa có'}</Tag>
             <span style={{ color: inboundPnrStatus?.color }}>{inboundPnrStatus?.title}</span>
-            {!sameAirline && isHandLing && (
-              <IconEdit className='pointer' onClick={() => setEditForm(true)} />
-            )}
+            <IconEdit className='pointer' onClick={() => setEditForm(true)} />
           </>
         ) : (
           <Form form={form} className='form-code'>
@@ -82,7 +75,7 @@ const FormInboundCode: any = () => {
             </Form.Item>
             <Form.Item name='inboundStatus'>
               <Select size='small' style={{ width: 120 }} onChange={() => {}}>
-                {listPnrStatus?.map((value: some) => {
+                {PNR_STATUS?.map((value: some) => {
                   return (
                     <Option key={value.stt} disabled={value?.disable} value={value.stt}>
                       {value.title}
@@ -97,11 +90,10 @@ const FormInboundCode: any = () => {
               onConfirm={() => {
                 const { inboundStatus, inboundCode, inboundAirline } = form?.getFieldsValue(true);
                 updateFlightBookingCode({
-                  bookingId: booking?.booking.bookingId,
+                  ticketId: booking?.tickets[1]?.id,
                   pnr: inboundCode,
                   status: inboundStatus,
                   airline: inboundAirline,
-                  ticketId: booking?.ticket[1]?.id,
                 });
               }}
               okText='Ok'

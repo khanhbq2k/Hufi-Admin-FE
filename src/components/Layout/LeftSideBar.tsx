@@ -2,16 +2,11 @@ import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-import { useAppDispatch, useAppSelector } from '~/utils/hook/redux';
-
 import { FormattedMessage } from 'react-intl';
 import { IconAirline, IconChevronDown, IconSubmenu, IconAirlineSelected } from '~/assets';
 import '~/components/Layout/layout.scss';
-import { visiblecollaps } from '~/features/systems/systemSlice';
-import { IS_COLLAPSIBLE, LAST_LINK_PREVIEW, routes } from '~/utils/constants/constant';
+import { routes } from '~/utils/constants/constant';
 import { subRouteSelected } from '~/utils/constants/dataOptions';
-import { isEmpty } from '~/utils/helpers/helpers';
 
 const { Sider } = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -43,27 +38,11 @@ let isChangeCollapsible = false;
 const LeftSideBar = () => {
   let location = useLocation();
   let navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const collapsible: boolean = useAppSelector((state) => state.systemReducer.collapsible);
-  const userInfo: UserInfo = useAppSelector((state) => state.systemReducer.userInfo);
 
   const onClick: MenuProps['onClick'] = (e) => {
-    localStorage.setItem(LAST_LINK_PREVIEW, e.key);
     navigate(e.key);
-  };
-
-  const getDefaultOpenKeys = (subKey: string) => {
-    let listKey = subKey.split('/');
-    listKey = listKey.slice(1, listKey.length - 1);
-    let result: string[] = [];
-    let parentKey = '';
-    listKey.forEach((el) => {
-      result.push(`${parentKey}/${el}`);
-      parentKey = `${parentKey}/${el}`;
-    });
-    setOpenKeys(result);
   };
 
   const handleVisibleLeftSideBar = () => {
@@ -77,31 +56,13 @@ const LeftSideBar = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!collapsible) {
-      getDefaultOpenKeys(location.pathname);
-    }
-  }, [collapsible]);
-
-  useEffect(() => {
     return () => {
       isChangeCollapsible = false;
     };
   }, []);
 
-  useEffect(() => {
-    if (isEmpty(openKeys) && isChangeCollapsible) {
-      isChangeCollapsible = false;
-      dispatch(visiblecollaps(!collapsible));
-      localStorage.setItem(IS_COLLAPSIBLE, String(!collapsible));
-    }
-  }, [openKeys]);
-
-  const genGroupTitle = (title: React.ReactNode, keyGroup: string) => {
-    return collapsible ? (
-      <span className='group-item-collapsible'>
-        <IconSubmenu />
-      </span>
-    ) : (
+  const genGroupTitle = (title: React.ReactNode) => {
+    return (
       <div className='group-item'>
         {title}
         <IconSubmenu />
@@ -115,7 +76,7 @@ const LeftSideBar = () => {
 
   const items: MenuProps['items'] = [
     getItem(
-      genGroupTitle(<FormattedMessage id='IDS_TEXT_SALE' />, 'sale'),
+      genGroupTitle(<FormattedMessage id='IDS_TEXT_SALE' />),
       `/${routes.SALE}`,
       null,
       [
@@ -156,7 +117,7 @@ const LeftSideBar = () => {
       className='sider-container'
       width={240}
       collapsedWidth={56}
-      collapsed={collapsible}
+      collapsed={false}
       collapsible
       onCollapse={handleVisibleLeftSideBar}
     >

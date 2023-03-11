@@ -45,19 +45,19 @@ export const deactivateFlightExtractor = (data: some = {}) => {
   return api(option);
 };
 
-export const updateFlightGuestInfo = (data = {}) => {
+export const updateFlightGuestInfo = (bookingId: number, data = {}) => {
   const option = {
     method: 'post',
-    url: '/helpDesk/updateFlightGuestInfo',
+    url: '/crm/booking/' + bookingId + '/guest',
     data,
   };
   return api(option);
 };
 
-export const updateFlightBookerInfo = (data = {}) => {
+export const updateFlightContactInfo = (bookingId: number, data: some = {}) => {
   const option = {
     method: 'post',
-    url: '/helpDesk/updateFlightBookerInfo',
+    url: '/crm/booking/' + bookingId + '/contact',
     data,
   };
   return api(option);
@@ -72,19 +72,10 @@ export const updateItineraryInfo = (data = {}) => {
   return api(option);
 };
 
-export const updateFlightPNRCodes = (data = {}) => {
+export const updateFlightBookingPnr = (bookingId: number, data: some = {}) => {
   const option = {
     method: 'post',
-    url: '/helpDesk/updateFlightPNRCode',
-    data,
-  };
-  return api(option);
-};
-
-export const updateFlightBookingCodes = (data = {}) => {
-  const option = {
-    method: 'post',
-    url: '/helpDesk/updateFlightBookingCode',
+    url: '/crm/booking/' + bookingId + '/ticket',
     data,
   };
   return api(option);

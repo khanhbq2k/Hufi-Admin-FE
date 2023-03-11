@@ -47,7 +47,7 @@ export const getAirports = (params = {}) => {
 export const getAllCountries = () => {
   const option = {
     method: 'get',
-    url: '/getAllCountries',
+    url: '/flight/countries',
   };
   return api(option);
 };

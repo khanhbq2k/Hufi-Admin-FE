@@ -2,7 +2,6 @@ import {
   Button,
   Drawer,
   Form,
-  Image,
   Input,
   message,
   Modal,
@@ -15,10 +14,11 @@ import {
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { getAllUsers, createUser, updateUserInfo, blockUser, unblockUser } from '~/apis/system';
 import { IconChevronDown } from '~/assets';
 import { some } from '~/utils/constants/constant';
-import { listGender } from '~/utils/constants/dataOptions';
+import { LIST_GENDER } from '~/utils/constants/dataOptions';
 
 const UserList: React.FunctionComponent = () => {
   const [listUser, setListUser] = useState<some[]>([]);
@@ -105,7 +105,7 @@ const UserList: React.FunctionComponent = () => {
       dataIndex: 'gender',
       key: 'gender',
       render: (text) => {
-        return <div>{listGender.find((g) => g.code === text)?.name}</div>;
+        return <div>{LIST_GENDER.find((g) => g.code === text)?.name}</div>;
       },
     },
     {
@@ -261,7 +261,7 @@ const CreateUserDrawer = (props: any) => {
           </Form.Item>
           <Form.Item name='gender' label='Giới tính'>
             <Select placeholder='Chọn' suffixIcon={<IconChevronDown />} optionFilterProp='children'>
-              {listGender.map((el: some, indx: number) => (
+              {LIST_GENDER.map((el: some, indx: number) => (
                 <Select.Option key={el.code} value={el.code}>
                   {el.name}
                 </Select.Option>
@@ -300,6 +300,7 @@ const CreateUserDrawer = (props: any) => {
 };
 
 const EditUserDrawer = (props: any) => {
+  const navigate = useNavigate();
   const { modal, setModal } = props;
   const { item } = modal;
   const [form] = Form.useForm();
@@ -317,7 +318,9 @@ const EditUserDrawer = (props: any) => {
       };
       const { data } = await updateUserInfo(dataDTO);
       if (data?.code === 200) {
+        message.success('Cập nhật thành công');
         handleClose();
+        navigate(0);
       } else {
         message.error(data.message);
       }
@@ -358,7 +361,7 @@ const EditUserDrawer = (props: any) => {
           </Form.Item>
           <Form.Item name='gender' label='Giới tính' initialValue={modal.gender}>
             <Select placeholder='Chọn' suffixIcon={<IconChevronDown />} optionFilterProp='children'>
-              {listGender.map((el: some) => (
+              {LIST_GENDER.map((el: some) => (
                 <Select.Option key={el.code} value={el.code}>
                   {el.name}
                 </Select.Option>
